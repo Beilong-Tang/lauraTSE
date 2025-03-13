@@ -207,11 +207,11 @@ class DmMixSpkReader:
     
 
 class DmRefReader:
-    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, ds = 5):
+    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, ref_ds = 5):
         with open(spk_dict_path, "r") as f:
             self.spk_dict = pickle.load(f)
         self.clean_scp = read_2column_text(clean_path)
-        self.ds = ds
+        self.ds = ref_ds
         self.mel_proc = MelSpec(**mel_config)
     
     def __len__(self):
@@ -228,10 +228,34 @@ class DmRefReader:
             ref_path = random.choice(self.spk_dict[spk])
         
         ref_speech, sr = librosa.load(ref_path, sr = None)
-        ref_speech = ref_speech[:int(self.ds * sr)]
+        ref_speech = ref_speech[-int(self.ds * sr):]
         ref_speech = normalize(ref_speech)
         return self.mel_proc(ref_speech)
-    pass
+
+class MelReader:
+    def __init__(self, scp_path, mel_config:dict, ref_ds = None):
+        """
+        Convert the input audio to mel spectrogram,
+        if ref_ds is not None, then clip the audio and only choose the last ds seconds
+        """
+        self.scp_dict = read_2column_text(scp_path)
+        self.mel_proc = MelSpec(**mel_config)
+        self.ds =  ref_ds
+    
+    def __len__(self):
+        return len(self.scp_dict)
+
+    def __iter__(self):
+        return iter(self.scp_dict)
+
+    def __getitem__(self, uid):
+        audio_path = self.scp_dict[uid]
+        audio, sr = librosa.load(audio_path, sr = None)
+        if self.ds is not None:
+            audio = audio[-int(sr * self.ds):]
+        audio = normalize(audio)
+        return self.mel_proc(audio)
+
 
 DATA_TYPES = {
     "dm_libri_mix": dict(
@@ -241,9 +265,19 @@ DATA_TYPES = {
         ), ## Newly added for dynamic mixing noise 
     "dm_libri_ref": dict(
         func=DmRefReader, 
-        kwargs=['spk_dict_path', "mel_config"],
+        kwargs=['spk_dict_path', "mel_config", "ref_ds"],
         help="Dynamic Mixing for reference speech for librispeech"
         ), ## Newly added for dynamic mixing noise 
+    "mixtrue_eval": dict(
+        func=MelReader, 
+        kwargs=["mel_config"],
+        help="audio to mel"
+        ), ## Mel spectrogram for the audio
+    "ref_eval": dict(
+        func=MelReader, 
+        kwargs=["mel_config", "ref_ds"],
+        help="audio to mel"
+        ), ## Mel spectrogram for the audio for ref_eval
     "sound": dict(
         func=sound_loader,
         kwargs=["float_dtype"],
@@ -376,11 +410,13 @@ class DMESPnetDataset(ESPnetDataset):
         max_cache_size: Union[float, int, str] = 0.0,
         max_cache_fd: int = 0,
         spk_dict_path:str = None, ## Note that this cannot be None
-        mel_config: dict = None
+        mel_config: dict = None,
+        ref_ds = 5
     ):
         assert spk_dict_path is not None
         self.mel_config = mel_config
         self.spk_dict_path = spk_dict_path
+        self.ref_ds = ref_ds
         super().__init__(path_name_type_list, preprocess, float_dtype, int_dtype, max_cache_size, max_cache_fd)
         
     
@@ -414,6 +450,8 @@ class DMESPnetDataset(ESPnetDataset):
                         kwargs['spk_dict_path'] = self.spk_dict_path 
                     elif key2 == "mel_config":
                         kwargs['mel_config'] = self.mel_config
+                    elif key2 =="ref_ds":
+                        kwargs['ref_ds'] = self.ref_ds
                     
                     else:
                         raise RuntimeError(f"Not implemented keyword argument: {key2}")
