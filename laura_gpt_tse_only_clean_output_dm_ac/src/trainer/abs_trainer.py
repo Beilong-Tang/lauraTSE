@@ -142,7 +142,7 @@ class Trainer:
         # _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
         #     _data_res["aux"], _data_res["aux_lengths"]
         # )
-        _data_res = data
+        _data_res = _data
             
         data_shape = []
         for key, value in _data_res.items():
@@ -178,7 +178,7 @@ class Trainer:
         # _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
         #     _data_res["aux"], _data_res["aux_lengths"]
         # )
-        _data_res = data
+        _data_res = _data
         
         for key, value in _data_res.items():
             _data_res[key] = value.cuda()
