@@ -98,10 +98,7 @@ def main(rank, args):
 
     ## Check if the conf_dm_noise config is specified
     ## If specified, use dynamic mixing for the noise
-    if args.conf_dm_noise is None:
-        train_iter = init_sequence_iter_factory(args, rank, "train")
-    else:
-        train_iter = init_dm_sequence_iter_factory(args, rank, 'train')
+    train_iter = init_dm_sequence_iter_factory(args, rank, 'train')
     val_iter = init_sequence_iter_factory(args, rank, "valid")
 
     ## ckpt_dir
