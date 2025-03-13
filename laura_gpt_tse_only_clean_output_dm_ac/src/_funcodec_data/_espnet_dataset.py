@@ -160,14 +160,13 @@ def normalize(audio):
     return audio * (1 / max_value)
 
 class DmMixSpkReader:
-    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, snr = 5, max_ds = 20):
+    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, snr = 5):
         # snr in [0,5]
         self.clean_scp = read_2column_text(clean_path)
         with open(spk_dict_path, "rb") as f:
             self.spk_dict = pickle.load(f)
         self.snr = snr
         self.mel_proc = MelSpec(**mel_config)
-        self.max_ds = max_ds
         pass 
 
     def __len__(self):
@@ -204,7 +203,6 @@ class DmMixSpkReader:
         _snr = random.random() * self.snr
         intf_audio = intf_audio * 10 ** (-_snr / 20)
         mix = clean_audio + intf_audio
-        mix = mix[:self.max_ds]
         return self.mel_proc.mel_one_np(mix)
     
 
@@ -243,7 +241,6 @@ class MelReader:
         self.scp_dict = read_2column_text(scp_path)
         self.mel_proc = MelSpec(**mel_config)
         self.ds =  ref_ds
-        self.max_ds = max_ds
     
     def __len__(self):
         return len(self.scp_dict)
