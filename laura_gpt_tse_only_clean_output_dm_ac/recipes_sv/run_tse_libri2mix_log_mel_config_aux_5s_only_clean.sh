@@ -28,7 +28,7 @@
 ###########
 
 name="librispeech"
-config_path=exp/$name/config_log_mel_aux_5s.yaml
+config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
 resume=""
 
 ###############

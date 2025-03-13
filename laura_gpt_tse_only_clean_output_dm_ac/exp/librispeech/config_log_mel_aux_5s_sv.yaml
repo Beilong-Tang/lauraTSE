@@ -8,12 +8,12 @@ train_shape_file: ["/DKUdata/tangbl/data/librispeech/funcodec/data/train/all_sha
 valid_shape_file: ["/DKUdata/tangbl/laura_gpt_se/libri2mix_tse_data_funcodec/s1/dev/all_shape.scp"]
 train_data_path_and_name_and_type: [
     [
-        "/DKUdata/tangbl/data/librispeech/funcodec/data/train/all.scp",
+        "/DKUdata/tangbl/data/librispeech/clean.scp",
         "text",
         "dm_libri_mix"
     ],
     [
-        "/DKUdata/tangbl/data/librispeech/funcodec/data/train/all.scp",
+        "/DKUdata/tangbl/data/librispeech/clean.scp",
         "aux",
         "dm_libri_ref"
     ],
