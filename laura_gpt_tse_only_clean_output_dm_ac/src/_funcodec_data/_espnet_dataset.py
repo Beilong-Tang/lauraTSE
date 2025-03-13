@@ -163,7 +163,7 @@ class DmMixSpkReader:
     def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, snr = 5):
         # snr in [0,5]
         self.clean_scp = read_2column_text(clean_path)
-        with open(spk_dict_path, "r") as f:
+        with open(spk_dict_path, "rb") as f:
             self.spk_dict = pickle.load(f)
         self.snr = snr
         self.mel_proc = MelSpec(**mel_config)
@@ -208,7 +208,7 @@ class DmMixSpkReader:
 
 class DmRefReader:
     def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, ref_ds = 5):
-        with open(spk_dict_path, "r") as f:
+        with open(spk_dict_path, "rb") as f:
             self.spk_dict = pickle.load(f)
         self.clean_scp = read_2column_text(clean_path)
         self.ds = ref_ds
@@ -268,7 +268,7 @@ DATA_TYPES = {
         kwargs=['spk_dict_path', "mel_config", "ref_ds"],
         help="Dynamic Mixing for reference speech for librispeech"
         ), ## Newly added for dynamic mixing noise 
-    "mixtrue_eval": dict(
+    "mixture_eval": dict(
         func=MelReader, 
         kwargs=["mel_config"],
         help="audio to mel"

@@ -104,30 +104,30 @@ class Trainer:
             self.new_bob = ckpt["new_bob"]
         
     
-    def _post_process(self, _data):
-        """
-        This process basically limits the length of aux, and also the 
-        """
-        if self.max_aux_ds is None:
-            return _data
-        _data_res = {} # Return value
-        ## Limit Aux length
-        _res = []
-        _res_len = []
-        for i, _t_aux in enumerate(_data['raw_aux']):
-            # [T]
-            _t_aux = _t_aux[:_data['raw_aux_lengths'][i].item()]
-            _t_aux = _t_aux[:int(self.max_aux_ds * 16000)] # Limit the maximum length
-            _res.append(_t_aux)
-            _res_len.append(len(_t_aux))
-        _data_res["aux"] = pad_list(_res, 0.0)
-        _data_res['aux_lengths'] = torch.tensor(_res_len, dtype = torch.long)
+    # def _post_process(self, _data):
+    #     """
+    #     This process basically limits the length of aux, and also the 
+    #     """
+    #     if self.max_aux_ds is None:
+    #         return _data
+    #     _data_res = {} # Return value
+    #     ## Limit Aux length
+    #     _res = []
+    #     _res_len = []
+    #     for i, _t_aux in enumerate(_data['raw_aux']):
+    #         # [T]
+    #         _t_aux = _t_aux[:_data['raw_aux_lengths'][i].item()]
+    #         _t_aux = _t_aux[:int(self.max_aux_ds * 16000)] # Limit the maximum length
+    #         _res.append(_t_aux)
+    #         _res_len.append(len(_t_aux))
+    #     _data_res["aux"] = pad_list(_res, 0.0)
+    #     _data_res['aux_lengths'] = torch.tensor(_res_len, dtype = torch.long)
 
-        _data_res["text"] = _data['raw']
-        _data_res['text_lengths'] = _data['raw_lengths']
-        _data_res['codec'] = _data['codec']
-        _data_res['codec_lengths'] = _data['codec_lengths']
-        return _data_res
+    #     _data_res["text"] = _data['raw']
+    #     _data_res['text_lengths'] = _data['raw_lengths']
+    #     _data_res['codec'] = _data['codec']
+    #     _data_res['codec_lengths'] = _data['codec_lengths']
+    #     return _data_res
 
     def _train_one_batch(self, batch, data, optim, if_log) -> dict:
         uttid, _data = data
@@ -169,15 +169,15 @@ class Trainer:
         uttid, _data = data
 
         # Post process:
-        _data_res = self._post_process(_data)
+        # _data_res = self._post_process(_data)
 
-        #  Apply Mel to data text
-        _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
-            _data_res["text"], _data_res["text_lengths"]
-        )
-        _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
-            _data_res["aux"], _data_res["aux_lengths"]
-        )
+        # #  Apply Mel to data text
+        # _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
+        #     _data_res["text"], _data_res["text_lengths"]
+        # )
+        # _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
+        #     _data_res["aux"], _data_res["aux_lengths"]
+        # )
         _data_res = data
         
         for key, value in _data_res.items():
