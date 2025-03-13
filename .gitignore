@@ -1,0 +1,19 @@
+*.out
+*.txt
+*.err
+__pycache__/
+test*
+*.pt
+ckpt/*
+*.pt
+data/*
+*.log
+output/*
+!ckpt/.gitkeep
+*.pkl
+*.flac
+*.scp
+
+
+## pyrightconfig.json
+pyrightconfig.json
