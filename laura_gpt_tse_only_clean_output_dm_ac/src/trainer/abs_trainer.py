@@ -84,7 +84,7 @@ class Trainer:
         self.max_mix_ds = config.max_mix_ds
         assert config.mel_config is not None
 
-        self.mix_process = MaxLength(['text'], max_len= int(self.max_mix_ds * 16000 / config.mel_config.hop_size))
+        self.mix_process = MaxLength(['text'], max_len= int(self.max_mix_ds * 16000 / config.mel_config['hop_size']))
         self.codec_process = MaxLength(['codec'], max_len=int(self.max_mix_ds * 16000 / 640))
 
         self.mel_process = MelSpec(**config.mel_config)
