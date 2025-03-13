@@ -230,7 +230,7 @@ class DmRefReader:
         ref_speech, sr = librosa.load(ref_path, sr = None)
         ref_speech = ref_speech[-int(self.ds * sr):]
         ref_speech = normalize(ref_speech)
-        return self.mel_proc(ref_speech)
+        return self.mel_proc.mel_one_np(ref_speech)
 
 class MelReader:
     def __init__(self, scp_path, mel_config:dict, ref_ds = None):
@@ -254,7 +254,7 @@ class MelReader:
         if self.ds is not None:
             audio = audio[-int(sr * self.ds):]
         audio = normalize(audio)
-        return self.mel_proc(audio)
+        return self.mel_proc.mel_one_np(audio)
 
 
 DATA_TYPES = {
