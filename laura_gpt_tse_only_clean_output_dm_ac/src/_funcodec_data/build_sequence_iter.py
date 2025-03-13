@@ -181,7 +181,8 @@ def build_sequence_iter_factory(
             preprocess=iter_options.preprocess_fn,
             max_cache_size=iter_options.max_cache_size,
             max_cache_fd=iter_options.max_cache_fd,
-            conf_dm_noise=args.conf_dm_noise
+            spk_dict_path=args.spk_dict_path, 
+            mel_config = args.mel_config
         )
 
         if Path(

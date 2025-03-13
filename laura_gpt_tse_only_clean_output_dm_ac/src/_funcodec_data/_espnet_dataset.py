@@ -148,60 +148,101 @@ def rand_int_loader(filepath, loader_type):
 def build_codec_loader(filepath, quant_groups=32, file_type="ark"):
     from funcodec.fileio.codec_loader import CodecLoader
     return CodecLoader(filepath, quant_groups=quant_groups, file_type=file_type)
+    
+import random
+import librosa
+import pickle
+from pathlib import Path
+from src.utils.mel_spectrogram import MelSpec
 
+def normalize(audio):
+    max_value = np.max(np.abs(audio))
+    return audio * (1 / max_value)
 
-class DmMixNoiseReader:
-    def __init__(self, path, conf_dm_noise):
-        self.clean_scp = read_2column_text(path) # uid - path
-        with open(conf_dm_noise, "r") as f:
-            conf = yaml.safe_load(f)
-        self.conf = AttrDict(**conf)
-
-        # Noise
-        self.noise_dic = {}
-        _tmp = read_2column_text(self.conf['noise']['scp'])
-        self.noise_dic[16000] = _tmp
-
-        # Wind noise 
-        self.wind_noise_dic = {}
-        _tmp = read_2column_text(self.conf['wind_noise']['scp'])
-        self.wind_noise_dic[16000] = _tmp 
-
-        # RiR Noise
-        self.rir_noise_dic = {}
-        _tmp = read_2column_text(self.conf['rir']['scp'])
-        self.rir_noise_dic[16000] = _tmp 
-
-        self.augmentations = list(conf["augmentations"].keys())
-        weight_augmentations = [v["weight"] for v in conf["augmentations"].values()]
-        self.conf.weight_augmentations = weight_augmentations / np.sum(weight_augmentations)
-
-        self.sr = conf["sr"]
-        # self.repeat_per_utt = conf["repeat_per_utt"]
-
+class DmMixSpkReader:
+    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, snr = 5):
+        # snr in [0,5]
+        self.clean_scp = read_2column_text(clean_path)
+        with open(spk_dict_path, "r") as f:
+            self.spk_dict = pickle.load(f)
+        self.snr = snr
+        self.mel_proc = MelSpec(**mel_config)
         pass 
 
+    def __len__(self):
+        return len(self.clean_scp)
+    
+    def __iter__(self):
+        return iter(self.clean_scp)
+    
+    def __getitem__(self, uid):
+        # load the path
+        clean_path = self.clean_scp[uid]
+        clean_spk_id = uid.split("-")[0]
+
+        intf_spk = random.choice(list(self.spk_dict.keys()))
+        while intf_spk == clean_spk_id:
+            intf_spk = random.choice(list(self.spk_dict.keys()))
+        intf_path = random.choice(self.spk_dict[intf_spk])
+
+        # load the audio
+        clean_audio, _ = librosa.load(clean_path, sr=None)
+        intf_audio, _ = librosa.load(intf_path, sr=None)
+        ## pad the length 
+        if clean_audio.shape[0] > intf_audio[0]:
+            ## repeat intf_audio 
+            new_intf_audio = np.tile(intf_audio, len(clean_audio) // len(intf_audio) + 1)
+            intf_audio = new_intf_audio[:len(clean_audio)]
+        elif clean_audio.shape[0] < intf_audio[0]:
+            offset = random.randint(0, len(intf_audio) - len(clean_audio) - 1)
+            intf_audio = intf_audio[offset: offset + len(clean_audio)]
+        assert intf_audio.shape == clean_audio.shape
+        ## normalize 
+        clean_audio, intf_audio = normalize(clean_audio), normalize(intf_audio)
+        ## snr
+        _snr = random.random() * self.snr
+        intf_audio = intf_audio * 10 ** (-_snr / 20)
+        mix = clean_audio + intf_audio
+        return self.mel_proc.mel_one_np(mix)
+    
+
+class DmRefReader:
+    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, ds = 5):
+        with open(spk_dict_path, "r") as f:
+            self.spk_dict = pickle.load(f)
+        self.clean_scp = read_2column_text(clean_path)
+        self.ds = ds
+        self.mel_proc = MelSpec(**mel_config)
+    
     def __len__(self):
         return len(self.clean_scp)
 
     def __iter__(self):
         return iter(self.clean_scp)
 
-
     def __getitem__(self, uid):
-        speech_path = self.clean_scp[uid]
-        audio, fs_speech = read_audio(speech_path, force_1ch=True)
-        meta = generate_augmentations_config(self.conf, fs_speech, audio, self.noise_dic, self.wind_noise_dic, self.rir_noise_dic)
-        clean, noisy= generate_from_config(meta, self.noise_dic, self.wind_noise_dic, self.rir_noise_dic) #[1,T], #[1,T]
+        spk = uid.split("-")[0]
 
-        hint_once(f"training data id {uid}", "data")
-        return np.concatenate([clean.squeeze(0), noisy.squeeze(0)]) # [T]
+        ref_path = random.choice(self.spk_dict[spk])
+        while Path(ref_path).stem == uid:
+            ref_path = random.choice(self.spk_dict[spk])
+        
+        ref_speech, sr = librosa.load(ref_path, sr = None)
+        ref_speech = ref_speech[:int(self.ds * sr)]
+        ref_speech = normalize(ref_speech)
+        return self.mel_proc(ref_speech)
+    pass
 
 DATA_TYPES = {
-    "dm_mix_noise": dict(
-        func=DmMixNoiseReader, 
-        kwargs=['conf_dm_noise'],
-        help="Dynamic Mixing for noisy speech"
+    "dm_libri_mix": dict(
+        func=DmMixSpkReader, 
+        kwargs=['spk_dict_path', "mel_config"],
+        help="Dynamic Mixing for librispeech intference speech"
+        ), ## Newly added for dynamic mixing noise 
+    "dm_libri_ref": dict(
+        func=DmRefReader, 
+        kwargs=['spk_dict_path', "mel_config"],
+        help="Dynamic Mixing for reference speech for librispeech"
         ), ## Newly added for dynamic mixing noise 
     "sound": dict(
         func=sound_loader,
@@ -334,9 +375,12 @@ class DMESPnetDataset(ESPnetDataset):
         int_dtype: str = "long",
         max_cache_size: Union[float, int, str] = 0.0,
         max_cache_fd: int = 0,
-        conf_dm_noise='conf_dm_noise/simulation_train.yaml',
+        spk_dict_path:str = None, ## Note that this cannot be None
+        mel_config: dict = None
     ):
-        self.conf_dm_noise = conf_dm_noise # This line has to be written before the super().__init__() method
+        assert spk_dict_path is not None
+        self.mel_config = mel_config
+        self.spk_dict_path = spk_dict_path
         super().__init__(path_name_type_list, preprocess, float_dtype, int_dtype, max_cache_size, max_cache_fd)
         
     
@@ -365,9 +409,12 @@ class DMESPnetDataset(ESPnetDataset):
                     elif key2 == "max_cache_fd":
                         kwargs["max_cache_fd"] = self.max_cache_fd
                     
-                    ## Add the conf_dm_noise here to support dynamic mixing of noise
-                    elif key2 == "conf_dm_noise":
-                        kwargs["conf_dm_noise"] = self.conf_dm_noise
+                    ## Add the dynamic mixing here
+                    elif key2 == "spk_dict_path":
+                        kwargs['spk_dict_path'] = self.spk_dict_path 
+                    elif key2 == "mel_config":
+                        kwargs['mel_config'] = self.mel_config
+                    
                     else:
                         raise RuntimeError(f"Not implemented keyword argument: {key2}")
 
