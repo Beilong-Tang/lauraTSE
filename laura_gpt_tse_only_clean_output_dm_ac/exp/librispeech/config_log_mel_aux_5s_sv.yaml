@@ -24,6 +24,7 @@ train_data_path_and_name_and_type: [
     ]
 ]
 spk_dict_path: /DKUdata/tangbl/data/librispeech/train_clean_100_360.pkl
+max_mix_ds: 15
 valid_data_path_and_name_and_type: [
      [
         "/Netdata/2021/zb/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/mix.scp",
