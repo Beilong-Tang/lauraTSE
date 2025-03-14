@@ -13,6 +13,7 @@ output/*
 *.pkl
 *.flac
 *.scp
+*.pth
 
 
 ## pyrightconfig.json
