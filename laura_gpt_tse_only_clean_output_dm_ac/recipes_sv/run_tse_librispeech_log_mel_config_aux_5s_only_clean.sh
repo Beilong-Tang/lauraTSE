@@ -29,7 +29,7 @@
 
 name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
-resume=""
+resume="/DKUdata/tangbl/lauraTSE/laura_gpt_tse_only_clean_output_dm_ac/ckpt/librispeech/config_log_mel_aux_5s_sv/epoch4.pth"
 
 ###############
 # DONT CHANGE #
