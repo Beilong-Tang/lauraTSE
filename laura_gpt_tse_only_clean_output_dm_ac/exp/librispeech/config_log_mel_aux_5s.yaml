@@ -4,36 +4,38 @@ init_param: ["/public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_e
 codec_model_file: /public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth
 codec_config_file: /public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/config.yaml
 
-train_shape_file: ["/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/train/all_shape.scp"]
+train_shape_file: ["/public/home/qinxy/bltang/data/librispeech/funcodec/data/train/all_shape.scp"]
 valid_shape_file: ["/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/dev/all_shape.scp"]
 train_data_path_and_name_and_type: [
     [
-        "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/train/all/mix.scp",
-        "raw",
-        "sound"
+        "/public/home/qinxy/bltang/data/librispeech/clean.scp",
+        "text",
+        "dm_libri_mix"
     ],
     [
-        "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/train/all/aux_s1.scp",
-        "raw_aux",
-        "sound"
+        "/public/home/qinxy/bltang/data/librispeech/clean.scp",
+        "aux",
+        "dm_libri_ref"
     ],
     [
-        "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/train/all.scp",
+        "/public/home/qinxy/bltang/data/librispeech/funcodec/data/train/all.scp",
         "codec",
         "npy"
     ]
 ]
+spk_dict_path: /public/home/qinxy/bltang/data/librispeech/train_clean_100_360.pkl
+max_mix_ds: 30
 valid_data_path_and_name_and_type: [
      [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/mix.scp",
-        "raw",
-        "sound"
-    ],
+        "text",
+        "mixture_eval"
+    ], # raw wav 
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/aux_s1.scp",
-        "raw_aux",
-        "sound"
-    ],
+        "aux",
+        "ref_eval"
+    ], # raw wav
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/dev/all.scp",
         "codec",
