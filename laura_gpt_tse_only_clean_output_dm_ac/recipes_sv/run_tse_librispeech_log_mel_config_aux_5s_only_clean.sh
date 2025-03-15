@@ -29,7 +29,7 @@
 
 name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
-resume="/DKUdata/tangbl/lauraTSE/laura_gpt_tse_only_clean_output_dm_ac/ckpt/librispeech/config_log_mel_aux_5s_sv/epoch4.pth"
+resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch6.pth"
 
 ###############
 # DONT CHANGE #
@@ -59,5 +59,5 @@ mkdir -p $log_path
 ###############
 ## Run  DDP  ##
 ###############
-export CUDA_VISIBLE_DEVICES="2,3"
+export CUDA_VISIBLE_DEVICES="1,2,3,5,6,7"
 python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume
