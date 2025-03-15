@@ -228,6 +228,7 @@ class DmRefReader:
         ref_path = random.choice(self.spk_dict[spk])
         while Path(ref_path).stem == uid:
             ref_path = random.choice(self.spk_dict[spk])
+        hint_once(ref_path, "ref_path", times = 5)
         
         ref_speech, sr = librosa.load(ref_path, sr = None)
         ref_speech = ref_speech[-int(self.ds * sr):]
