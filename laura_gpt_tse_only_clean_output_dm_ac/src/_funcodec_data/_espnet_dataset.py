@@ -179,12 +179,13 @@ class DmMixSpkReader:
         # load the path
         clean_path = self.clean_scp[uid]
         clean_spk_id = uid.split("-")[0]
+        hint_once(clean_path, "clean_path", times = 5)
 
         intf_spk = random.choice(list(self.spk_dict.keys()))
         while intf_spk == clean_spk_id:
             intf_spk = random.choice(list(self.spk_dict.keys()))
         intf_path = random.choice(self.spk_dict[intf_spk])
-        hint_once(intf_spk, "intf_spk", times = 5)
+        hint_once(intf_path, "intf_path", times = 5)
 
         # load the audio
         clean_audio, _ = librosa.load(clean_path, sr=None)
