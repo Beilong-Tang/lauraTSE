@@ -21,9 +21,9 @@ def hint_once(content, uid, rank=None, times = 1):
             return 
         
         if _cur_rank is not None:
-            print(f"[HINT_ONCE {HINTED.get(uid)+1/times}] Rank {_cur_rank}: {content}")
+            print(f"[HINT_ONCE {HINTED.get(uid)+1}/{times}] Rank {_cur_rank}, {uid}: {content}")
         else:
-            print(f"[HINT_ONCE {HINTED.get(uid)+1/times}] {content}")
+            print(f"[HINT_ONCE {HINTED.get(uid)+1}/{times}] {uid}: {content}")
         HINTED[uid] = HINTED[uid] + 1
 
 def check_hint(uid) -> bool:
