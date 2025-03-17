@@ -29,7 +29,7 @@
 
 name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
-resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch6.pth"
+resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch25.pth"
 
 ###############
 # DONT CHANGE #
@@ -59,5 +59,9 @@ mkdir -p $log_path
 ###############
 ## Run  DDP  ##
 ###############
-export CUDA_VISIBLE_DEVICES="1,2,3,5,6,7"
-python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume
+export CUDA_VISIBLE_DEVICES="3,5,6,7"
+python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume 
+
+
+## Text encoder: 21M
+## Codec Encoder: 21M

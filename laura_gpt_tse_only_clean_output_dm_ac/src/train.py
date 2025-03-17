@@ -55,7 +55,7 @@ def main(rank, args):
         rank = args.rank
         device = args.gpu
     else:
-        setup(rank, args.world_size, args.dist_backend)
+        setup(rank, args.world_size, args.dist_backend, port = args.port)
         device = rank % torch.cuda.device_count()
         pass
     torch.cuda.set_device(device)
@@ -150,6 +150,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--local_rank", default=-1, type=int, help="local rank for distributed training"
+    )
+    parser.add_argument(
+        "--port", default = 12355, type = int, help = "the port for DDP"
     )
     args = parser.parse_args()
     print(f"DEBUG: resume path {args.resume}")
