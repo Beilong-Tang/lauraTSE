@@ -53,21 +53,26 @@ codec_token_rate: 25
 
 # network architecture
 # encoder related
-text_encoder: conformer
+# text_encoder: conformer
+# text_encoder_conf:
+#     output_size: 512    # dimension of attention
+#     attention_heads: 8
+#     linear_units: 2048  # the number of units of position-wise feed forward
+#     num_blocks: 6      # the number of encoder blocks
+#     dropout_rate: 0.1
+#     positional_dropout_rate: 0.1
+#     attention_dropout_rate: 0.0
+#     input_layer: linear # encoder architecture type
+#     normalize_before: true
+#     rel_pos_type: latest
+#     pos_enc_layer_type: rel_pos
+#     selfattention_layer_type: rel_selfattn
+#     use_cnn_module: false
+
+text_encoder: nemo
 text_encoder_conf:
-    output_size: 512    # dimension of attention
-    attention_heads: 8
-    linear_units: 2048  # the number of units of position-wise feed forward
-    num_blocks: 6      # the number of encoder blocks
-    dropout_rate: 0.1
-    positional_dropout_rate: 0.1
-    attention_dropout_rate: 0.0
-    input_layer: linear # encoder architecture type
-    normalize_before: true
-    rel_pos_type: latest
-    pos_enc_layer_type: rel_pos
-    selfattention_layer_type: rel_selfattn
-    use_cnn_module: false
+    enc_layer: 2 # starting from 0. Use the output after layer (enc_layer + 1)
+    path: nvidia/stt_en_conformer_ctc_large # The hugging face dir for nemo. (Only large and small are available)
 
 # decoder related
 codec_encoder: conformer

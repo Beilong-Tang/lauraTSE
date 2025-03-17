@@ -35,6 +35,7 @@ def init_dm_sequence_iter_factory(args, rank, mode) -> SequenceIterFactory:
 
 from funcodec.tasks.text2audio_generation import text_encoder_choices, codec_encoder_choices
 from model.laura_model_only_clean import LauraGenModelOnlyClean
+from model.nemo_conformer import ConformerEncoder
 from funcodec.torch_utils.initialize import initialize
 import os
 
@@ -42,11 +43,8 @@ def build_model(args):
     input_size = args.input_size
 
     # 1. Text Encoder
-    if args.text_encoder is not None:
-        text_encoder_class = text_encoder_choices.get_class(args.text_encoder)
-        text_encoder = text_encoder_class(input_size=input_size, **args.text_encoder_conf)
-    else:
-        text_encoder = None
+    text_encoder = ConformerEncoder.init_from_pretrained(**args.text_encoder_conf)
+    
 
     # 2. Codec Encoder
     if args.codec_encoder is not None:
