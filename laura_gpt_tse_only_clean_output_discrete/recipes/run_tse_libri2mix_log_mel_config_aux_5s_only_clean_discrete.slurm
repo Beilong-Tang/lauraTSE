@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -J run_tse_libri2mix_log_mel_config_aux_5s_only_clean
+#SBATCH -J run_tse_libri2mix_log_mel_config_aux_5s_only_clean_discrete
 #SBATCH -N 4
-#SBATCH -o log/run_tse_libri2mix_log_mel_config_aux_5s_only_clean.out
-#SBATCH -e log/run_tse_libri2mix_log_mel_config_aux_5s_only_clean.err
+#SBATCH -o log/run_tse_libri2mix_log_mel_config_aux_5s_only_clean_discrete.out
+#SBATCH -e log/run_tse_libri2mix_log_mel_config_aux_5s_only_clean_discrete.err
 #SBATCH -p kshdnormal02
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
