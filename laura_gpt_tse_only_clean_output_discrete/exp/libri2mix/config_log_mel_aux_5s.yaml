@@ -11,29 +11,49 @@ train_data_path_and_name_and_type: [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/train/all/mix.scp",
         "raw",
         "sound"
-    ],
+    ], # raw mixture sound
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/train/all/aux_s1.scp",
         "raw_aux",
         "sound"
-    ],
+    ], # raw reference sound
+    [
+        "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/mix/train/all.scp",
+        "text",
+        "npy"
+    ], # mixture codec
+    [
+        "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/aux_s1/train/all.scp",
+        "aux",
+        "npy"
+    ], # reference codec
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/train/all.scp",
         "codec",
         "npy"
-    ]
+    ] # target codec 
 ]
 valid_data_path_and_name_and_type: [
      [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/mix.scp",
         "raw",
         "sound"
-    ],
+    ], # raw mixture sound
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/aux_s1.scp",
         "raw_aux",
         "sound"
-    ],
+    ], # raw aux sound
+    [
+        "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/mix/dev/all.scp",
+        "text",
+        "npy"
+    ], # mixture codec
+    [
+        "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/aux_s1/dev/all.scp",
+        "aux",
+        "npy"
+    ], # reference codec
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/dev/all.scp",
         "codec",

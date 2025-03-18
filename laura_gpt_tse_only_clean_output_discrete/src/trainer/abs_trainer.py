@@ -124,13 +124,32 @@ class Trainer:
             _t_aux = _t_aux[:int(self.max_aux_ds * 16000)] # Limit the maximum length
             _res.append(_t_aux)
             _res_len.append(len(_t_aux))
-        _data_res["aux"] = pad_list(_res, 0.0)
-        _data_res['aux_lengths'] = torch.tensor(_res_len, dtype = torch.long)
 
-        _data_res["text"] = _data['raw']
-        _data_res['text_lengths'] = _data['raw_lengths']
+
+
+        _data_res["aux_mel"] = pad_list(_res, 0.0)
+        _data_res['aux_mel_lengths'] = torch.tensor(_res_len, dtype = torch.long)
+
+        _data_res["text_mel"] = _data['raw']
+        _data_res['text_mel_lengths'] = _data['raw_lengths']
         _data_res['codec'] = _data['codec']
         _data_res['codec_lengths'] = _data['codec_lengths']
+        
+
+        ##  Apply Mel to data text
+        _data_res["text_mel"], _data_res["text_mel_lengths"] = self.mel_process.mel(
+            _data_res["text_mel"], _data_res["text_mel_lengths"]
+        )
+        _data_res["aux_mel"], _data_res["aux_mel_lengths"] = self.mel_process.mel(
+            _data_res["aux_mel"], _data_res["aux_mel_lengths"]
+        )
+
+        _data_res["text"] = _data['text']
+        _data_res["text_lengths"] = _data['text_lengths']
+
+        _data_res['aux'] = _data['aux']
+        _data_res['aux_lengths'] = _data['aux_lengths']
+        
 
         return _data_res
 
@@ -140,14 +159,6 @@ class Trainer:
         ## Post process:
         _data_res = self._post_process(_data)
 
-        ##  Apply Mel to data text
-        _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
-            _data_res["text"], _data_res["text_lengths"]
-        )
-        _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
-            _data_res["aux"], _data_res["aux_lengths"]
-        )
-            
         data_shape = []
         for key, value in _data_res.items():
             data_shape.append(f"{key}:{value.shape}")
@@ -174,14 +185,6 @@ class Trainer:
 
         ## Post process:
         _data_res = self._post_process(_data)
-
-        ##  Apply Mel to data text
-        _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
-            _data_res["text"], _data_res["text_lengths"]
-        )
-        _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
-            _data_res["aux"], _data_res["aux_lengths"]
-        )
         
         for key, value in _data_res.items():
             _data_res[key] = value.cuda()

@@ -106,6 +106,9 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             use_ddp=True,
         )
 
+        ## discrete_embeddings
+        self.text_emb = nn.ModuleList([nn.Embedding(codebook_size, self.codebook_dim) for _ in range(predict_nq)])
+
     def build_codec_lm(self, conf: Dict):
         name = conf.pop("name")
         if name == "transformer":
@@ -131,6 +134,32 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
         ys_mask = ~make_pad_mask(lengths)
         m = subsequent_mask(ys_mask.size(-1), device=ys_mask.device).unsqueeze(0)
         return ys_mask.unsqueeze(-2) & m
+
+    def encode_emb(
+            self,
+            text: torch.Tensor, # [B, T, N]
+            text_lengths: torch.Tensor, # [B]
+    ):
+        """
+        It reconstructs the continuous embeddings using the two 
+
+        Args:
+            text: [B,T,N], codec n_q for texts
+            text_lengths: [B] the length
+        Returns:
+            text_emb: [B, T, D]
+            text_lengths
+        """
+        res = []
+        for i, _t in enumerate(text):
+            _t = _t[:text_lengths[i].item()] # [T,N]
+            temp_emb = 0 
+            for i in range(self.predict_nq):
+                temp_emb += self.text_emb[i](_t[:,i]) # [T, D]
+            res.append(temp_emb)
+        res = pad_list(res, 0.0) # [B, T, D]
+        return res, text_lengths
+
 
     def encode(
             self,
@@ -176,7 +205,8 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
         task_id_emb = self.lm_embedding(torch.tensor([self.task_id], dtype=torch.int64, device=text.device))
         codec_emb = None
         if codec is not None and codec_lengths is not None:
-            codec_emb = self.calc_dense_vector(codec, codec_lengths)
+            # codec_emb = self.calc_dense_vector(codec, codec_lengths)
+            codec_emb = self.encode_emb(codec, codec_lengths)
         inputs_list = []
         for i, text_len in enumerate(text_lengths):
             one_input = [sos_eos_emb, text[i, :text_len], task_id_emb]
@@ -362,15 +392,23 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             text_lengths: torch.Tensor,
             aux: torch.Tensor,
             aux_lengths: torch.Tensor, 
+            text_mel: torch.Tensor,
+            text_mel_lengths: torch.Tensor, 
+            aux_mel: torch.Tensor,
+            aux_mel_lengths: torch.Tensor,
             codec: torch.Tensor,
             codec_lengths: torch.Tensor,
     ) -> Tuple[torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
         """
         Args:
-            text: (B, L, D) ## The mixture Mel
+            text: (B, L, N) ## The Codec Text
             text_lengths: (B,)
-            aux: (B, L, D) ## The referene Mel
+            aux: (B, L, N) ## The Codec Aux
             aux_lengths: (B,)
+            text_mel: (B, L, D) ## The mixture Mel
+            text_mel_lengths: (B,)
+            aux_mel: (B, L, D) ## The referene Mel
+            aux_mel_lengths: (B,)
             codec: (B, T, N) ## The clean
             codec_lengths: (B,) ## Clean length
         """
@@ -384,8 +422,8 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             text = self.token_embedding(text * mask) * mask.unsqueeze(-1)
         
         # 1. encode text and ref
-        text, text_lengths = self.encode(text, text_lengths)
-        aux, aux_lengths = self.encode(aux, aux_lengths) # [B, T, D]
+        text, text_lengths = self.encode_emb(text, text_lengths)
+        aux, aux_lengths = self.encode_emb(aux, aux_lengths) # [B, T, D]
         
         sep_emb = self.lm_embedding(torch.tensor([self.sep], dtype=torch.int64, device=text.device)) # [1, D]
         
@@ -421,7 +459,21 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             codec[:, :, :self.predict_nq], # [B, T, n_q]
             codec_lengths
         ) # [B, T, n_q, 1024]
-        codec_emb, codec_emb_lens = self.cal_codec_emb(text, text_lengths, prob, codec_lengths)
+
+        text_mel, text_mel_lengths = self.encode(text_mel, text_mel_lengths)
+        aux_mel, aux_mel_lengths = self.encode(aux_mel, aux_mel_lengths)
+        inputs_list = [] # [[T1,D], [T2,D]]
+        llm_lengths = []
+        for i in range(0, len(text)):
+            _t = text[i][:text_mel_lengths[i].item()] # [T, D]
+            _a = aux[i][:aux_mel_lengths[i].item()] # [T, D]
+            one_input = torch.cat([_a, sep_emb, _t], dim = 0)
+            inputs_list.append(one_input)
+            llm_lengths.append(len(one_input))
+        llm_inputs = pad_list(inputs_list, 0.0)
+        llm_lengths = torch.tensor(llm_lengths, dtype = torch.long, device = text.device)
+
+        codec_emb, codec_emb_lens = self.cal_codec_emb(llm_inputs, llm_lengths, prob, codec_lengths)
 
         # 4. loss calculation
         target_emb = self.calc_dense_vector(codec, codec_lengths)
