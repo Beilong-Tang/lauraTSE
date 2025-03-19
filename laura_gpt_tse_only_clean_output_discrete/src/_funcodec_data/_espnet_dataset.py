@@ -35,7 +35,7 @@ import yaml
 
 from utils.audio import read_audio
 from utils.utils import AttrDict
-from dataset.augmentation import generate_from_config, generate_augmentations_config
+# from dataset.augmentation import generate_from_config, generate_augmentations_config
 
 from utils.hinter import hint_once
 
@@ -150,52 +150,52 @@ def build_codec_loader(filepath, quant_groups=32, file_type="ark"):
     return CodecLoader(filepath, quant_groups=quant_groups, file_type=file_type)
 
 
-class DmMixNoiseReader:
-    def __init__(self, path, conf_dm_noise):
-        self.clean_scp = read_2column_text(path) # uid - path
-        with open(conf_dm_noise, "r") as f:
-            conf = yaml.safe_load(f)
-        self.conf = AttrDict(**conf)
+# class DmMixNoiseReader:
+#     def __init__(self, path, conf_dm_noise):
+#         self.clean_scp = read_2column_text(path) # uid - path
+#         with open(conf_dm_noise, "r") as f:
+#             conf = yaml.safe_load(f)
+#         self.conf = AttrDict(**conf)
 
-        # Noise
-        self.noise_dic = {}
-        _tmp = read_2column_text(self.conf['noise']['scp'])
-        self.noise_dic[16000] = _tmp
+#         # Noise
+#         self.noise_dic = {}
+#         _tmp = read_2column_text(self.conf['noise']['scp'])
+#         self.noise_dic[16000] = _tmp
 
-        # Wind noise 
-        self.wind_noise_dic = {}
-        _tmp = read_2column_text(self.conf['wind_noise']['scp'])
-        self.wind_noise_dic[16000] = _tmp 
+#         # Wind noise 
+#         self.wind_noise_dic = {}
+#         _tmp = read_2column_text(self.conf['wind_noise']['scp'])
+#         self.wind_noise_dic[16000] = _tmp 
 
-        # RiR Noise
-        self.rir_noise_dic = {}
-        _tmp = read_2column_text(self.conf['rir']['scp'])
-        self.rir_noise_dic[16000] = _tmp 
+#         # RiR Noise
+#         self.rir_noise_dic = {}
+#         _tmp = read_2column_text(self.conf['rir']['scp'])
+#         self.rir_noise_dic[16000] = _tmp 
 
-        self.augmentations = list(conf["augmentations"].keys())
-        weight_augmentations = [v["weight"] for v in conf["augmentations"].values()]
-        self.conf.weight_augmentations = weight_augmentations / np.sum(weight_augmentations)
+#         self.augmentations = list(conf["augmentations"].keys())
+#         weight_augmentations = [v["weight"] for v in conf["augmentations"].values()]
+#         self.conf.weight_augmentations = weight_augmentations / np.sum(weight_augmentations)
 
-        self.sr = conf["sr"]
-        # self.repeat_per_utt = conf["repeat_per_utt"]
+#         self.sr = conf["sr"]
+#         # self.repeat_per_utt = conf["repeat_per_utt"]
 
-        pass 
+#         pass 
 
-    def __len__(self):
-        return len(self.clean_scp)
+#     def __len__(self):
+#         return len(self.clean_scp)
 
-    def __iter__(self):
-        return iter(self.clean_scp)
+#     def __iter__(self):
+#         return iter(self.clean_scp)
 
 
-    def __getitem__(self, uid):
-        speech_path = self.clean_scp[uid]
-        audio, fs_speech = read_audio(speech_path, force_1ch=True)
-        meta = generate_augmentations_config(self.conf, fs_speech, audio, self.noise_dic, self.wind_noise_dic, self.rir_noise_dic)
-        clean, noisy= generate_from_config(meta, self.noise_dic, self.wind_noise_dic, self.rir_noise_dic) #[1,T], #[1,T]
+#     def __getitem__(self, uid):
+#         speech_path = self.clean_scp[uid]
+#         audio, fs_speech = read_audio(speech_path, force_1ch=True)
+#         meta = generate_augmentations_config(self.conf, fs_speech, audio, self.noise_dic, self.wind_noise_dic, self.rir_noise_dic)
+#         clean, noisy= generate_from_config(meta, self.noise_dic, self.wind_noise_dic, self.rir_noise_dic) #[1,T], #[1,T]
 
-        hint_once(f"training data id {uid}", "data")
-        return np.concatenate([clean.squeeze(0), noisy.squeeze(0)]) # [T]
+#         hint_once(f"training data id {uid}", "data")
+#         return np.concatenate([clean.squeeze(0), noisy.squeeze(0)]) # [T]
 
 DATA_TYPES = {
     "dm_mix_noise": dict(

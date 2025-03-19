@@ -21,7 +21,7 @@ conda activate bltang_new
 module purge
 module load compiler/devtoolset/7.3.1
 module load mpi/hpcx/2.7.4/gcc-7.3.1
-module load compiler/rocm/dtk-23.10
+module load compiler/rocm/dtk-23.10l
 
 ###########
 # Setting #
