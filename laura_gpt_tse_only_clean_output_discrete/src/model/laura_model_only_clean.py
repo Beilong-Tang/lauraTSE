@@ -141,8 +141,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             text_lengths: torch.Tensor, # [B]
     ):
         """
-        It reconstructs the continuous embeddings using the two 
-
+        It reconstructs the continuous embeddings using the n_q embedding tables
         Args:
             text: [B,T,N], codec n_q for texts
             text_lengths: [B] the length
@@ -206,7 +205,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
         codec_emb = None
         if codec is not None and codec_lengths is not None:
             # codec_emb = self.calc_dense_vector(codec, codec_lengths)
-            codec_emb = self.encode_emb(codec, codec_lengths)
+            codec_emb, _ = self.encode_emb(codec, codec_lengths)
         inputs_list = []
         for i, text_len in enumerate(text_lengths):
             one_input = [sos_eos_emb, text[i, :text_len], task_id_emb]
