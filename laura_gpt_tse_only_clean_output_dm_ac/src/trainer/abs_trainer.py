@@ -205,8 +205,6 @@ class Trainer:
         total = int((len(tr_data) * 1) * self.config.epoch)
         start_time = time.time()
         for batch, data in enumerate(tr_data):
-            if batch == 5:
-                break
             if_log = batch % self.log_interval == 0
             res = self._train_one_batch(batch, data, optim, if_log)
             if if_log:
@@ -226,7 +224,6 @@ class Trainer:
         if self.rank == 0:
             print(f"evaluating on cv_data of len {len(cv_data)* 1}")
         with torch.no_grad():
-            dprint("testing")
             for data in cv_data:
                 res = self._eval_one_batch(data)
                 if result == None:
