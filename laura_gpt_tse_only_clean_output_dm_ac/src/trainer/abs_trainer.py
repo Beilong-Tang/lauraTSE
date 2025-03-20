@@ -150,7 +150,7 @@ class Trainer:
         return None
 
     def _eval_one_batch(self, data) -> dict:
-        print("evaluating on one batch data!")
+        dprint("evaluating on one batch data!")
         uttid, _data = data
 
         # Post process:
@@ -224,6 +224,7 @@ class Trainer:
         if self.rank == 0:
             print(f"evaluating on cv_data of len {len(cv_data)* 1}")
         with torch.no_grad():
+            dprint("testing")
             for data in cv_data:
                 res = self._eval_one_batch(data)
                 if result == None:
