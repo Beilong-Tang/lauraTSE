@@ -31,6 +31,10 @@ name="libri2mix"
 config_path=exp/$name/config_log_mel_aux_5s_finetune_librispeech_epoch_28.yaml
 resume=""
 
+
+## Finetuninig ckpt 
+fine_tune="/public/home/qinxy/bltang/laura_gpt/lauraTSE/laura_gpt_tse_only_clean_output_dm_ac/ckpt/librispeech/config_log_mel_aux_5s_sv/best.pth"
+
 ###############
 # DONT CHANGE #
 ###############

@@ -86,6 +86,14 @@ def main(rank, args):
             #   in PyTorch<=1.4
             map_location=f"cuda:{torch.cuda.current_device()}",
         )
+    ## If finetune or not, if we do, load the ckpt
+    if args.fine_tune != "":
+        l.info(f"# FINE TUNING # from ckpt {args.fine_tune}")
+        _ckpt = torch.load(args.fine_tune, map_location="cuda")
+        l.info(f"pretrained for epochs {_ckpt['epoch']}")
+        model.load_state_dict(_ckpt['model_state_dict'])
+        pass
+
     model = DDP(model, device_ids=[args.gpu])
     ## optimizer
     optim = init(torch.optim, args.optim, model.parameters())
@@ -127,6 +135,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, default=None, help="path to yaml config")
     parser.add_argument("--ckpt_path", type=str, required=True)
     parser.add_argument("--resume", type=str, nargs="?", const="")
+    parser.add_argument("--fine_tune", type=str, nargs="?", const="") ## Determines if we finetue or not. 
     ##############
     # DDP Config #
     ##############
