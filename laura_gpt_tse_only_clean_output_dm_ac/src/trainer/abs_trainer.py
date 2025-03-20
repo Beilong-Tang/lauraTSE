@@ -150,6 +150,7 @@ class Trainer:
         return None
 
     def _eval_one_batch(self, data) -> dict:
+        print("evaluating on one batch data!")
         uttid, _data = data
 
         # Post process:
