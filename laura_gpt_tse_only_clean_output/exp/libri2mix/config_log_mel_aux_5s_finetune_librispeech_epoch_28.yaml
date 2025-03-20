@@ -1,3 +1,8 @@
+## 
+## Same as the config_log_mel_aux_5s.yaml. This is just to make a new config and experiment for
+## the finetune 
+##
+
 init_param: ["/public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth:quantizer.rq.model:quantizer_codebook"]
 
 # For inference need
@@ -92,7 +97,7 @@ model_conf:
     codec_sampling_ratio: 0.5
     lsm_weight: 0.0
     length_normalized_loss: true
-    predict_nq: 1
+    predict_nq: 2
     codec_conf:
         num_quantizers: 32
         codebook_size: 1024
@@ -139,7 +144,7 @@ max_aux_ds: 5
 optim:
     type: Adam
     args:
-        lr: 1.0e-3
+        lr: 1.0e-4
 
 scheduler: warmuplr
 scheduler_conf:
