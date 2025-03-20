@@ -3,7 +3,7 @@
 #SBATCH -N 4
 #SBATCH -o log/run_tse_librispeech_log_mel_config_aux_5s_only_clean_ac_debug.out
 #SBATCH -e log/run_tse_librispeech_log_mel_config_aux_5s_only_clean_ac_debug.err
-#SBATCH -p kshdnormal
+#SBATCH -p kshdnormal02
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=dcu:4
