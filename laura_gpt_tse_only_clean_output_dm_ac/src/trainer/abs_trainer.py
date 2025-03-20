@@ -246,7 +246,7 @@ class Trainer:
             tr_data = self.tr_data.build_iter(epoch)
             cv_data = self.cv_data.build_iter(epoch, shuffle=False)
             ### training
-            self._train(self.optim, tr_data, epoch)
+            # self._train(self.optim, tr_data, epoch)
             #### evaluation
             result = self._eval(cv_data, epoch)
             if self.best_value is None:
