@@ -223,14 +223,14 @@ class Trainer:
         result = None
         if self.rank == 0:
             print(f"evaluating on cv_data of len {len(cv_data)* 1}")
-        with torch.no_grad():
-            for data in cv_data:
-                res = self._eval_one_batch(data)
-                if result == None:
-                    result = res
-                else:
-                    for key in result.keys():
-                        result[key] += res[key]
+        # with torch.no_grad():
+        for data in cv_data:
+            res = self._eval_one_batch(data)
+            if result == None:
+                result = res
+            else:
+                for key in result.keys():
+                    result[key] += res[key]
         for key in result.keys():
             result[key] = result[key] / len(cv_data)
         ## gather all tensors onto the same device
