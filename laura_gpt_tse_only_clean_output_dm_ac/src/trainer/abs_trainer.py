@@ -221,8 +221,8 @@ class Trainer:
     def _eval(self, cv_data, epoch):
         self.model.eval()
         result = None
-        if self.rank == 0:
-            print(f"evaluating on cv_data of len {len(cv_data)* 1}")
+        # if self.rank == 0:
+        print(f"evaluating on cv_data of len {len(cv_data)* 1} {torch.distributed.get_rank()}")
         with torch.no_grad():
             for data in cv_data:
                 res = self._eval_one_batch(data)
@@ -248,6 +248,7 @@ class Trainer:
             ### training
             self._train(self.optim, tr_data, epoch)
             #### evaluation
+            dist.barrier()
             result = self._eval(cv_data, epoch)
             if self.best_value is None:
                 save_best = True
