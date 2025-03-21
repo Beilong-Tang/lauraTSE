@@ -248,6 +248,7 @@ class Trainer:
             ### training
             self._train(self.optim, tr_data, epoch)
             #### evaluation
+            print(f"finishing training {torch.distributed.get_rank()}")
             dist.barrier()
             result = self._eval(cv_data, epoch)
             if self.best_value is None:
