@@ -169,7 +169,6 @@ class Trainer:
             _data_res[key] = value.cuda()
         loss, stats, weight = self.model(**_data_res)
         loss = apply_weight_average(loss, stats, weight)
-        torch.cuda.empty_cache()
         return stats
 
     def _log(self, msg):
@@ -224,14 +223,14 @@ class Trainer:
         result = None
         if self.rank == 0:
             print(f"evaluating on cv_data of len {len(cv_data)* 1}")
-        # with torch.no_grad():
-        for data in cv_data:
-            res = self._eval_one_batch(data)
-            if result == None:
-                result = res
-            else:
-                for key in result.keys():
-                    result[key] += res[key]
+        with torch.no_grad():
+            for data in cv_data:
+                res = self._eval_one_batch(data)
+                if result == None:
+                    result = res
+                else:
+                    for key in result.keys():
+                        result[key] += res[key]
         for key in result.keys():
             result[key] = result[key] / len(cv_data)
         ## gather all tensors onto the same device
@@ -245,11 +244,10 @@ class Trainer:
         for epoch in range(self.epoch_start, self.config.epoch):
             self._log(f"...epoch {epoch}...")
             tr_data = self.tr_data.build_iter(epoch)
+            cv_data = self.cv_data.build_iter(epoch, shuffle=False)
             ### training
             self._train(self.optim, tr_data, epoch)
             #### evaluation
-            del tr_data # try to free memory
-            cv_data = self.cv_data.build_iter(epoch, shuffle=False)
             result = self._eval(cv_data, epoch)
             if self.best_value is None:
                 save_best = True
