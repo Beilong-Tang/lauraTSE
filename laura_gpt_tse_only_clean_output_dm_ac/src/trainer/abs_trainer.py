@@ -169,6 +169,7 @@ class Trainer:
             _data_res[key] = value.cuda()
         loss, stats, weight = self.model(**_data_res)
         loss = apply_weight_average(loss, stats, weight)
+        torch.cuda.empty_cache()
         return stats
 
     def _log(self, msg):
