@@ -216,7 +216,6 @@ class Trainer:
                 res["time/batch"] = f"{time_per_batch}s"
                 start_time = time.time()
                 self._log(f"tr, {dict_to_str(res)}")
-                self.logger.log.info(f"{self.rank}: {batch}/{len(tr_data)}")
             self.step += 1
 
     def _eval(self, cv_data, epoch):
