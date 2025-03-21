@@ -245,10 +245,11 @@ class Trainer:
         for epoch in range(self.epoch_start, self.config.epoch):
             self._log(f"...epoch {epoch}...")
             tr_data = self.tr_data.build_iter(epoch)
-            cv_data = self.cv_data.build_iter(epoch, shuffle=False)
             ### training
             self._train(self.optim, tr_data, epoch)
             #### evaluation
+            del tr_data # try to free memory
+            cv_data = self.cv_data.build_iter(epoch, shuffle=False)
             result = self._eval(cv_data, epoch)
             if self.best_value is None:
                 save_best = True
