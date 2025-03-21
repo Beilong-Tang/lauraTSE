@@ -150,7 +150,7 @@ class Trainer:
         return None
 
     def _eval_one_batch(self, data) -> dict:
-        dprint("evaluating on one batch data!")
+        # dprint("evaluating on one batch data!")
         uttid, _data = data
 
         # Post process:
@@ -250,7 +250,7 @@ class Trainer:
             self._train(self.optim, tr_data, epoch)
             #### evaluation
             print(f"finishing training {torch.distributed.get_rank()}")
-            dist.barrier()
+            # dist.barrier()
             result = self._eval(cv_data, epoch)
             if self.best_value is None:
                 save_best = True
