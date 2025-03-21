@@ -157,7 +157,7 @@ from src.utils.mel_spectrogram import MelSpec
 
 def normalize(audio):
     max_value = np.max(np.abs(audio))
-    return audio * (1 / max_value)
+    return audio * (1 / (max_value + 1e-8))
 
 class DmMixSpkReader:
     def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, snr = 5):
