@@ -195,5 +195,6 @@ if __name__ == "__main__":
     #################
     else:
         print("running ddp")
-        args.world_size = len(",".split(os.environ["CUDA_VISIBLE_DEVICES"]))
+        args.world_size = len(os.environ["CUDA_VISIBLE_DEVICES"].split(","))
+        print("world size: ", args.world_size)
         mp.spawn(main, args=(args,), nprocs=args.world_size, join=True)
