@@ -119,7 +119,7 @@ model_conf:
 
 ### Training related
 batch_type: length
-batch_bins: 7680
+batch_bins: 5760 # 1920 per gpu
 batch_size: 40 # This does not matter here
 sort_in_batch: descending
 sort_batch: descending

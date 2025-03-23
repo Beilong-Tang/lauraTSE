@@ -3,6 +3,11 @@ import os
 import sys 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
+#### This might not contribute anything ####
+import os 
+os.environ['HF_ENDPOINT'] = "https://hf-mirror.com"
+############################################
+
 import random
 import yaml
 import numpy as np

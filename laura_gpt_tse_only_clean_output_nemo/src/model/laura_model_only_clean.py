@@ -62,8 +62,10 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
 
         # 1. build text inputs related modules
         self.text_encoder = text_encoder
+        text_encoder_d_model = self.text_encoder._cfg['encoder']['d_model']
+        assert text_encoder_d_model == 512, "it should be 512 (Check here)"
         self.text_enc_out_layer = nn.Linear(
-            self.text_encoder.output_size() if text_encoder is not None else input_size,
+            text_encoder_d_model,
             self.codebook_dim
         )
         self.vocab_size = vocab_size
