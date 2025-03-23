@@ -184,6 +184,9 @@ class ConformerEncoder(nemo_asr.models.EncDecCTCModelBPE):
         model.eval()
         return model
     
+    def __call__(self, input_signal, input_signal_length):
+        return self.encode(input_signal = input_signal, input_signal_length = input_signal_length)
+    
     def encode(self, input_signal=None, input_signal_length=None, processed_signal=None, processed_signal_length=None):
         """
         Forward pass of the model.
