@@ -71,7 +71,7 @@ codec_token_rate: 25
 
 text_encoder: nemo
 text_encoder_conf:
-    enc_layer: 2 # starting from 0. Use the output after layer (enc_layer + 1)
+    enc_layer: 6 # starting from 0. Use the output after layer (enc_layer + 1)
     path: nvidia/stt_en_conformer_ctc_large # The hugging face dir for nemo. (Only large and small are available)
 
 # decoder related
