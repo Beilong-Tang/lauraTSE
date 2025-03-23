@@ -206,6 +206,7 @@ class ConformerEncoder(nemo_asr.models.EncDecCTCModelBPE):
             A tuple of 2 elements -
             1) The encoded tensor of shape [B, T, D].
             2) The lengths of the encoded sequence, of shape [B].
+            3) None, for compability
         """
         #####################
         try:
@@ -234,7 +235,7 @@ class ConformerEncoder(nemo_asr.models.EncDecCTCModelBPE):
         encoder_output = self._conformer_encode(audio_signal=processed_signal, length=processed_signal_length, layer = layer)
         encoded = encoder_output[0]
         encoded_len = encoder_output[1]
-        return encoded, encoded_len
+        return encoded, encoded_len, None
 
     def get_num_params(self):
         def _cal_param(m):
