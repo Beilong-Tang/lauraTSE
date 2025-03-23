@@ -78,10 +78,19 @@ def main(rank, args):
     ## load laura gpt model
     model: nn.Module = build_model(args)
     model.cuda()
-    l.info(f"model {model} is intialized")
-    l.info(f"model parameters: {sum(p.numel() for p in model.parameters())}")
-    l.info(f"Decoder LM parameters: {sum(p.numel() for p in model.codec_lm.parameters())}")
-    l.info(f"NeMo Conformer parameters: {model.text_encoder.get_num_params()}")
+    # l.info(f"model {model} is intialized")
+    # l.info(f"model parameters: {sum(p.numel() for p in model.parameters())}")
+    # l.info(f"Decoder LM parameters: {sum(p.numel() for p in model.codec_lm.parameters())}")
+    # l.info(f"NeMo Conformer parameters: {model.text_encoder.get_num_params()}")
+    params = [("Decoder LM params", sum(p.numel() for p in model.codec_lm.parameters())),
+              ("NeMo Conformer params", model.text_encoder.get_num_params()),
+              ("Codec Encoder params", sum(p.numel() for p in model.codec_encoder.parameters()))]
+    total_params = 0
+    for _k, _v in params:
+        l.info(f"{_k}: {_v}")
+        total_params += _v
+    l.info(f"Total Model params: {total_params}")
+
     for p in args.init_param:
         l.info(f"Loading pretrained params from {p}")
         load_pretrained_model(

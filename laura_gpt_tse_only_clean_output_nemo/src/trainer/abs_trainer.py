@@ -141,12 +141,12 @@ class Trainer:
         _data_res = self._post_process(_data)
 
         ##  Apply Mel to data text
-        _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
-            _data_res["text"], _data_res["text_lengths"]
-        )
-        _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
-            _data_res["aux"], _data_res["aux_lengths"]
-        )
+        # _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
+        #     _data_res["text"], _data_res["text_lengths"]
+        # )
+        # _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
+        #     _data_res["aux"], _data_res["aux_lengths"]
+        # )
             
         data_shape = []
         for key, value in _data_res.items():
@@ -176,12 +176,12 @@ class Trainer:
         _data_res = self._post_process(_data)
 
         ##  Apply Mel to data text
-        _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
-            _data_res["text"], _data_res["text_lengths"]
-        )
-        _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
-            _data_res["aux"], _data_res["aux_lengths"]
-        )
+        # _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
+        #     _data_res["text"], _data_res["text_lengths"]
+        # )
+        # _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
+        #     _data_res["aux"], _data_res["aux_lengths"]
+        # )
         
         for key, value in _data_res.items():
             _data_res[key] = value.cuda()
