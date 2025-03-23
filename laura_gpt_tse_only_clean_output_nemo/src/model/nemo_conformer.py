@@ -200,10 +200,9 @@ class ConformerEncoder(nemo_asr.models.EncDecCTCModelBPE):
                 processed audio sequences.
 
         Returns:
-            A tuple of 3 elements -
-            1) The log probabilities tensor of shape [B, T, D].
-            2) The lengths of the acoustic sequence after propagation through the encoder, of shape [B].
-            3) The greedy token predictions of the model of shape [B, T] (via argmax)
+            A tuple of 2 elements -
+            1) The encoded tensor of shape [B, T, D].
+            2) The lengths of the encoded sequence, of shape [B].
         """
         #####################
         try:
