@@ -59,7 +59,7 @@ def main(rank, args):
         rank = args.rank
         device = args.gpu
     else:
-        setup(rank, args.world_size, args.dist_backend)
+        setup(rank, args.world_size, args.dist_backend, args.port)
         device = rank % torch.cuda.device_count()
         pass
     torch.cuda.set_device(device)
@@ -133,6 +133,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, default=None, help="path to yaml config")
     parser.add_argument("--ckpt_path", type=str, required=True)
     parser.add_argument("--resume", type=str, nargs="?", const="")
+    parser.add_argument("--port", default = 12355, type = int)
     ##############
     # DDP Config #
     ##############
