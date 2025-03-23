@@ -4,7 +4,7 @@ init_param: ["/DKUdata/tangbl/FunCodec/egs/LibriTTS/codec/exp/audio_codec-encode
 codec_model_file: /DKUdata/tangbl/FunCodec/egs/LibriTTS/codec/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth
 codec_config_file: /DKUdata/tangbl/FunCodec/egs/LibriTTS/codec/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/config.yaml
 
-train_shape_file: ["/DKUdata/tangbl/laura_gpt_se/libri2mix_tse_data_funcodec/s1/train/all_shape.sc"]
+train_shape_file: ["/DKUdata/tangbl/laura_gpt_se/libri2mix_tse_data_funcodec/s1/train/all_shape.scp"]
 valid_shape_file: ["/DKUdata/tangbl/laura_gpt_se/libri2mix_tse_data_funcodec/s1/dev/all_shape.scp"]
 train_data_path_and_name_and_type: [
     [
