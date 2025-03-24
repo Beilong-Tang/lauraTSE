@@ -1,12 +1,14 @@
 #!/bin/bash
-#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean
-#SBATCH -N 1
-#SBATCH -o log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean.out
-#SBATCH -e log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean.err
+#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28
+#SBATCH -N 4
+#SBATCH -o log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28.out
+#SBATCH -e log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28.err
 #SBATCH -p kshdnormal
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=dcu:4
+
+#### Special Note ####
 
 # Set bash to 'debug' mode, it will exit on :
 # -e 'error', -o ... 'error in pipeline', -x 'print commands',
@@ -31,16 +33,18 @@ module load compiler/rocm/dtk-23.10
 ###########
 # Setting #
 ###########
-stage=1
+stage=0
 stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 # 0. libri2mix mixture without norm
 name="libri2mix"
 dataset="libri2mix" # Specify which dataset to infer
-config_name="config_log_mel_aux_5s.yaml"
+config_name="config_log_mel_aux_5s_finetune_librispeech_epoch_28.yaml"
+
 
 mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
 ref_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/aux_s1.scp"
+
 
 
 libri2mix_clean_dir="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/test/s1" # for wespeaker only
@@ -57,7 +61,7 @@ wer_model="base"
 wer_num_proc=8
 
 # DONT CHANGE #
-wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/whisper/whisper_$wer_model.txt"
+wer_reference="/public/home/qinxy/bltang/data/wsj0_target/min/tt/generate/whisper/whisper_$wer_model.txt"
 
 ###############
 # DONT CHANGE #
@@ -88,17 +92,19 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
   ## TODO: Change WER TO Large After downloading
   python src/eval/wer.py -t "$output_dir"/wavs -r $wer_reference \
     -o "$output_dir"/transcript_"$wer_model".txt -m $wer_model --num_proc $wer_num_proc
+fi 
+
+
+if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
 
   # SPK SIM
   echo "[SPKSIM WeSpeaker]"
   python src/eval/wespeaker_eval.py -t "$output_dir/wavs" \
     -r $libri2mix_clean_dir -o "$output_dir/wespeaker.csv" 
-fi 
 
-
-if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
   echo "[Evaluation]"
   # DNSMOS
   echo "[DNSMOS 16k]"
   python src/eval/dnsmos.py --model_dir $dns_model_dir -t "$output_dir/wavs" -o "$output_dir/dnsmos.csv"
 fi
+

@@ -56,6 +56,7 @@ def main(rank, args):
         rank = args.rank
         device = args.gpu
     else:
+        print("using DDP setup")
         setup(rank, args.world_size, args.dist_backend, port = args.port)
         device = rank % torch.cuda.device_count()
         pass
