@@ -59,6 +59,7 @@ def main(rank, args):
         setup(rank, args.world_size, args.dist_backend, port = args.port)
         device = rank % torch.cuda.device_count()
         pass
+    print(f"rank {rank} device {device}")
     torch.cuda.set_device(device)
     setup_seed(args.seed, rank)
 
@@ -90,7 +91,7 @@ def main(rank, args):
             #   in PyTorch<=1.4
             map_location=f"cuda:{torch.cuda.current_device()}",
         )
-    model = DDP(model, device_ids=[device])
+    model = DDP(model, device_ids=[None])
     ## optimizer
     optim = init(torch.optim, args.optim, model.parameters())
     ## scheduler
@@ -99,7 +100,6 @@ def main(rank, args):
     l.info(f"scheduler {scheduler} and optim {optim} is initialized")
     ## setup dataloader
     ### Initialized iter factory
-    print("sheculder done!")
     ## Check if the conf_dm_noise config is specified
     ## If specified, use dynamic mixing for the noise
     train_iter = init_dm_sequence_iter_factory(args, rank, 'train')

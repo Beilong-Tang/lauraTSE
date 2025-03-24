@@ -31,6 +31,8 @@ name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
 resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch37.pth"
 
+port=12357
+
 ###############
 # DONT CHANGE #
 ###############
@@ -60,7 +62,7 @@ mkdir -p $log_path
 ## Run  DDP  ##
 ###############
 export CUDA_VISIBLE_DEVICES="0,1,2,3"
-python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume 
+python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume --port $port
 
 
 ## Text encoder: 21M

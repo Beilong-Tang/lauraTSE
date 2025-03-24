@@ -28,13 +28,13 @@ max_mix_ds: 15
 valid_data_path_and_name_and_type: [
      [
         "/Netdata/2021/zb/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/mix.scp",
-        "text",
-        "mixture_eval"
+        "raw",
+        "sound"
     ],
     [
         "/Netdata/2021/zb/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/aux_s1.scp",
-        "aux",
-        "ref_eval"
+        "raw_aux",
+        "sound"
     ],
     [
         "/DKUdata/tangbl/laura_gpt_se/libri2mix_tse_data_funcodec/s1/dev/all.scp",
@@ -116,7 +116,7 @@ model_conf:
 
 ### Training related
 batch_type: length
-batch_bins: 15000 # for 6 gpu cards (1920 per gpu)
+batch_bins: 7680 # for 6 gpu cards (1920 per gpu)
 batch_size: 40 # This does not matter here
 sort_in_batch: descending
 sort_batch: descending

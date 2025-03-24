@@ -43,21 +43,24 @@ class MaxLength():
                 _res_dict[_key+"_lengths"] = torch.tensor(res_len, dtype = torch.long)
             return _res_dict
 
-
-def normalize(audio):
-
-    pass
-
 class Normalize():
     def __init__(self):
         pass
+
+    def norm_one(self, audio):
+        max_value = torch.max(torch.abs(audio))
+        return audio * (1 / max_value)
 
     def normalize(self, data, data_lengths):
         """
         data: [B,T]
         data_lengths: [B]
         """
-        pass
+        for idx, _item in enumerate(data):
+            _d = _item[:data_lengths[idx].item()]
+            _d = self.norm_one(_d)
+            data[idx][:data_lengths[idx].item()] = _d
+        return data, data_lengths
 
 # class CleanNoisyFilter():
 

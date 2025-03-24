@@ -13,7 +13,7 @@ from utils.utils import Logger
 
 from .helper import dict_to_str, save
 from utils.hinter import hint_once 
-from utils.postprocess import MaxLength
+from utils.postprocess import MaxLength, Normalize
 from funcodec.bin.codec_inference import Speech2Token
 from funcodec.modules.nets_utils import pad_list
 
@@ -89,6 +89,7 @@ class Trainer:
         self.codec_process = MaxLength(['codec'], max_len=int(self.max_mix_ds * 16000 / 640))
 
         self.mel_process = MelSpec(**config.mel_config)
+        self.normalize = Normalize()
 
 
         if resume != "":
@@ -140,6 +141,10 @@ class Trainer:
         _data_res['codec'] = _data['codec']
         _data_res['codec_lengths'] = _data['codec_lengths']
 
+        ## Normalize
+        _data_res['aux'], _data_res['aux_lengths'] = self.normalize.normalize(_data_res['aux'], _data_res['aux_lengths'])
+        _data_res["text"], _data_res['text_lengths'] = self.normalize.normalize(_data_res["text"], _data_res['text_lengths'])
+
         return _data_res
         pass
 
@@ -184,7 +189,7 @@ class Trainer:
         uttid, _data = data
 
         # Post process:
-        _data_res = self._post_process(_data)
+        _data_res = self._post_process_eval(_data)
 
         # #  Apply Mel to data text
         # _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
