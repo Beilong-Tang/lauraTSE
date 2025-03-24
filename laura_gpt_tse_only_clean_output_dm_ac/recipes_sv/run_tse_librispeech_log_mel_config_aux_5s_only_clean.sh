@@ -31,7 +31,7 @@ name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
 resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch37.pth"
 
-port=12357
+port=12355
 
 ###############
 # DONT CHANGE #
