@@ -91,7 +91,7 @@ def main(rank, args):
             #   in PyTorch<=1.4
             map_location=f"cuda:{torch.cuda.current_device()}",
         )
-    model = DDP(model, device_ids=[None])
+    model = DDP(model, device_ids=[rank])
     ## optimizer
     optim = init(torch.optim, args.optim, model.parameters())
     ## scheduler

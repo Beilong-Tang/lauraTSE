@@ -33,6 +33,10 @@ resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch37.pth"
 
 port=12355
 
+NCCL_ASYNC_ERROR_HANDLING=1 
+NCCL_DEBUG=DEBUG 
+TORCH_DISTRIBUTED_DEBUG=DETAIL
+
 ###############
 # DONT CHANGE #
 ###############
