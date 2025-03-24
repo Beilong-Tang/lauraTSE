@@ -28,13 +28,13 @@ max_mix_ds: 20
 valid_data_path_and_name_and_type: [
      [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/mix.scp",
-        "text",
-        "mixture_eval"
+        "raw",
+        "sound"
     ], # raw wav 
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/dev/aux_s1.scp",
-        "aux",
-        "ref_eval"
+        "raw_aux",
+        "sound"
     ], # raw wav
     [
         "/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/dev/all.scp",
