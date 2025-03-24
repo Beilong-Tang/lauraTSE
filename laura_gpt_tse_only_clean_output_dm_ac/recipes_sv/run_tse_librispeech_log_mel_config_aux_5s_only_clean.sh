@@ -29,7 +29,7 @@
 
 name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
-resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch28.pth"
+resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch37.pth"
 
 ###############
 # DONT CHANGE #
@@ -59,7 +59,7 @@ mkdir -p $log_path
 ###############
 ## Run  DDP  ##
 ###############
-export CUDA_VISIBLE_DEVICES="0,1,2,3,4"
+export CUDA_VISIBLE_DEVICES="0,1,2,3"
 python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume 
 
 

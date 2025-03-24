@@ -43,6 +43,22 @@ class MaxLength():
                 _res_dict[_key+"_lengths"] = torch.tensor(res_len, dtype = torch.long)
             return _res_dict
 
+
+def normalize(audio):
+
+    pass
+
+class Normalize():
+    def __init__(self):
+        pass
+
+    def normalize(self, data, data_lengths):
+        """
+        data: [B,T]
+        data_lengths: [B]
+        """
+        pass
+
 # class CleanNoisyFilter():
 
 #     def __init__(self):

@@ -47,6 +47,7 @@ def cleanup():
 
 
 def main(rank, args):
+    print(rank)
     args = AttrDict(**vars(args))
     #########
     ## DDP ##
@@ -74,7 +75,7 @@ def main(rank, args):
     ## load laura gpt model
     model: nn.Module = build_model(args)
     model.cuda()
-    l.info(f"model {model} is intialized")
+    # l.info(f"model {model} is intialized")
     l.info(f"model parameters: {sum(p.numel() for p in model.parameters())}")
     l.info(f"Decoder LM parameters: {sum(p.numel() for p in model.codec_lm.parameters())}")
     l.info(f"Text encoder (conformer) parameters: {sum(p.numel() for p in model.text_encoder.parameters())}")
@@ -89,7 +90,7 @@ def main(rank, args):
             #   in PyTorch<=1.4
             map_location=f"cuda:{torch.cuda.current_device()}",
         )
-    model = DDP(model, device_ids=[args.gpu])
+    model = DDP(model, device_ids=[device])
     ## optimizer
     optim = init(torch.optim, args.optim, model.parameters())
     ## scheduler
@@ -98,7 +99,7 @@ def main(rank, args):
     l.info(f"scheduler {scheduler} and optim {optim} is initialized")
     ## setup dataloader
     ### Initialized iter factory
-
+    print("sheculder done!")
     ## Check if the conf_dm_noise config is specified
     ## If specified, use dynamic mixing for the noise
     train_iter = init_dm_sequence_iter_factory(args, rank, 'train')
@@ -185,3 +186,4 @@ if __name__ == "__main__":
         args.world_size = len(os.environ["CUDA_VISIBLE_DEVICES"].split(","))
         print("world size: ", args.world_size)
         mp.spawn(main, args=(args,), nprocs=args.world_size, join=True)
+        cleanup()
