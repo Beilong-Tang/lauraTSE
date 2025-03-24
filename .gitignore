@@ -15,6 +15,7 @@ output/*
 *.scp
 *.pth
 *.wav
+*.csv
 
 
 ## pyrightconfig.json
