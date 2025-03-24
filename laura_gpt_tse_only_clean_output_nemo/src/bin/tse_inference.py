@@ -23,9 +23,14 @@ class TSExtraction:
                 map_location=device,
             )
         logger.info("model: {}".format(model))
-        logger.info(
-            "model parameter number: {}".format(statistic_model_parameters(model))
-        )
+        params = [("Decoder LM params", sum(p.numel() for p in model.codec_lm.parameters())),
+              ("NeMo Conformer params", model.text_encoder.get_num_params()),
+              ("Codec Encoder params", sum(p.numel() for p in model.codec_encoder.parameters()))]
+        total_params = 0
+        for _k, _v in params:
+            logger.info(f"{_k}: {_v}")
+            total_params += _v
+        logger.info(f"Total Model params: {total_params}")
 
         # Load Ckpt #
         ckpt = torch.load(model_ckpt, map_location=device)

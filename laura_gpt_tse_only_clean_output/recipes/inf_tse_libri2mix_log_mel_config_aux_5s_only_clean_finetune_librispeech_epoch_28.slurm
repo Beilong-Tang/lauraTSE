@@ -61,7 +61,7 @@ wer_model="base"
 wer_num_proc=8
 
 # DONT CHANGE #
-wer_reference="/public/home/qinxy/bltang/data/wsj0_target/min/tt/generate/whisper/whisper_$wer_model.txt"
+wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/whisper/whisper_$wer_model.txt"
 
 ###############
 # DONT CHANGE #
