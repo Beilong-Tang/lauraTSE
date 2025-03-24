@@ -29,7 +29,7 @@
 
 name="libri2mix"
 config_path=exp/$name/config_log_mel_aux_5s_nemo_sv.yaml
-resume="ckpt/libri2mix/config_log_mel_aux_5s_nemo_sv/epoch32.pth"
+resume="ckpt/libri2mix/config_log_mel_aux_5s_nemo_sv/epoch34.pth"
 
 ###############
 # DONT CHANGE #
