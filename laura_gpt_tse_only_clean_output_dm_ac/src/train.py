@@ -9,6 +9,7 @@ import yaml
 import numpy as np
 
 import torch
+torch.cuda.empty_cache()
 import torch.multiprocessing as mp
 import torch.distributed as dist
 import torch.nn as nn
@@ -92,7 +93,7 @@ def main(rank, args):
             #   in PyTorch<=1.4
             map_location=f"cuda:{torch.cuda.current_device()}",
         )
-    model = DDP(model, device_ids=[rank])
+    model = DDP(model, device_ids=[None])
     ## optimizer
     optim = init(torch.optim, args.optim, model.parameters())
     ## scheduler

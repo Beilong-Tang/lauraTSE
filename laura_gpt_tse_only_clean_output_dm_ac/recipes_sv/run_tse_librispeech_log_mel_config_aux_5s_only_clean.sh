@@ -31,7 +31,7 @@ name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_sv.yaml
 resume="ckpt/librispeech/config_log_mel_aux_5s_sv/epoch37.pth"
 
-port=12355
+port=12401
 
 NCCL_ASYNC_ERROR_HANDLING=1 
 NCCL_DEBUG=DEBUG 

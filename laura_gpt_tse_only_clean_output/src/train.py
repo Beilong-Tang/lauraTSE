@@ -109,9 +109,13 @@ def main(rank, args):
     if args.conf_dm_noise is None:
         train_iter = init_sequence_iter_factory(args, rank, "train")
     else:
+        print("init training dataset!")
         train_iter = init_dm_sequence_iter_factory(args, rank, 'train')
+    print("init validation dataset")
     val_iter = init_sequence_iter_factory(args, rank, "valid")
+    print("done!!")
 
+    print("start training")
     ## ckpt_dir
     trainer = Trainer(
         model,

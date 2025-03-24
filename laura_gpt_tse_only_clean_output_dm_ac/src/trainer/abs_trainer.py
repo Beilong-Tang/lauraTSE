@@ -84,6 +84,7 @@ class Trainer:
         self.max_mix_ds = config.max_mix_ds
         self.max_aux_ds = 5
         assert config.mel_config is not None
+        print("starting trainer")
 
         self.mix_process = MaxLength(['text'], max_len= int(self.max_mix_ds * 16000 / config.mel_config['hop_size']))
         self.codec_process = MaxLength(['codec'], max_len=int(self.max_mix_ds * 16000 / 640))
@@ -276,6 +277,7 @@ class Trainer:
         return result[self.best_field]
 
     def train(self):
+        print("Training!")
         for epoch in range(self.epoch_start, self.config.epoch):
             self._log(f"...epoch {epoch}...")
             tr_data = self.tr_data.build_iter(epoch)
