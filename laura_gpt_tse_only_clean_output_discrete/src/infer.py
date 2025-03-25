@@ -112,7 +112,7 @@ def inference(rank, args):
             # 3. Ref Codec -> [1, T, N_q]
             ref_codec = np.load(ref_codec_path)
             ref_codec = torch.from_numpy(ref_codec).to(device).unsqueeze(0)
-            ref_codec = ref_codec[:,:int(25 * 10)]
+            ref_codec = ref_codec[:,:int(25 * 10)] # limit the length to be 10
             
 
             # # 2. Ref Codec ->
