@@ -41,6 +41,8 @@ config_name="config_log_mel_aux_5s.yaml"
 
 mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
 ref_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/aux_s1.scp"
+mix_codec_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/mix/test/all.scp"
+ref_codec_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/aux_s1/test/all.scp"
 
 
 libri2mix_clean_dir="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/test/s1" # for wespeaker only
