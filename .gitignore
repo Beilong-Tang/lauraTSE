@@ -16,6 +16,8 @@ output/*
 *.pth
 *.wav
 *.csv
+ac_output/
+sv_output/
 
 
 ## pyrightconfig.json
