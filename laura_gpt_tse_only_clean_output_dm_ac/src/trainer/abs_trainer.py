@@ -96,7 +96,7 @@ class Trainer:
         if resume != "":
             ## loading ckpt
             self._log(f"loading model from {resume}...")
-            ckpt = torch.load(resume, map_location="cpu")
+            ckpt = torch.load(resume, map_location="cpu", weights_only=False)
             self.model.module.load_state_dict(ckpt["model_state_dict"])
             self.optim.load_state_dict(ckpt["optim"])
             self.epoch_start = ckpt["epoch"] + 1
@@ -193,12 +193,12 @@ class Trainer:
         _data_res = self._post_process_eval(_data)
 
         # #  Apply Mel to data text
-        # _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
-        #     _data_res["text"], _data_res["text_lengths"]
-        # )
-        # _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
-        #     _data_res["aux"], _data_res["aux_lengths"]
-        # )
+        _data_res["text"], _data_res["text_lengths"] = self.mel_process.mel(
+            _data_res["text"], _data_res["text_lengths"]
+        )
+        _data_res["aux"], _data_res["aux_lengths"] = self.mel_process.mel(
+            _data_res["aux"], _data_res["aux_lengths"]
+        )
         # _data_res = _data
         
         for key, value in _data_res.items():
