@@ -82,12 +82,12 @@ class TSExtraction:
         #     decoded_codec[:, continual_length:], bit_width=None, run_mod="decode"
         # )
         # 3. predict embeddings
-        mix_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
-        aux_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
-        text_mel, text_mel_lengths = self.model.encode(mix_mel, mix_lens)
-        aux_mel, aux_mel_lengths = self.model.encode(ref_mel, aux_lens)
-        text_outs = torch.cat([aux_mel, sep, text_mel], dim = 1) # [1,T,D]
-        text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
+        # mix_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
+        # aux_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
+        # text_mel, text_mel_lengths = self.model.encode(mix_mel, mix_lens)
+        # aux_mel, aux_mel_lengths = self.model.encode(ref_mel, aux_lens)
+        # text_outs = torch.cat([aux_mel, sep, text_mel], dim = 1) # [1,T,D]
+        # text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
 
         gen_speech = self.model.syn_audio(
             decoded_codec,
