@@ -464,8 +464,8 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
         inputs_list = [] # [[T1,D], [T2,D]]
         llm_lengths = []
         for i in range(0, len(text)):
-            _t = text[i][:text_mel_lengths[i].item()] # [T, D]
-            _a = aux[i][:aux_mel_lengths[i].item()] # [T, D]
+            _t = text_mel[i][:text_mel_lengths[i].item()] # [T, D]
+            _a = aux_mel[i][:aux_mel_lengths[i].item()] # [T, D]
             one_input = torch.cat([_a, sep_emb, _t], dim = 0)
             inputs_list.append(one_input)
             llm_lengths.append(len(one_input))
