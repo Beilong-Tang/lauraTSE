@@ -74,7 +74,9 @@ model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
 echo "[Inference]"
 python src/infer.py --mix_wav_scp $mix_wav_scp --ref_wav_scp $ref_wav_scp \
- --config $config_path --model_ckpt $model_ckpt --output_dir "$output_dir/wavs" --num_proc $num_proc --gpus $gpus
+  --mix_codec_scp $mix_codec_scp --ref_codec_scp $ref_codec_scp \
+ --config $config_path --model_ckpt $model_ckpt --output_dir "$output_dir/wavs" \
+ --num_proc $num_proc --gpus $gpus
 fi
 
 
