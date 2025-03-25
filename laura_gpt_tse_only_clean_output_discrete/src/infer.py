@@ -124,7 +124,7 @@ def inference(rank, args):
 
             # 1. Inference
             start = time.time()
-            output = tse(mix_mel, ref_mel)[0]["gen"].squeeze()  # [T]
+            output = tse(mix_mel, ref_mel, mix_codec, ref_codec)[0]["gen"].squeeze()  # [T]
             rtf = (time.time() - start) / (len(output) / sr)
             pbar.set_postfix({"RTF": rtf})
             total_rtf += rtf
