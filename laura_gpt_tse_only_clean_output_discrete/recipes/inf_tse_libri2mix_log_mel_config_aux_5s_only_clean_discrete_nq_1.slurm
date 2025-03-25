@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean
+#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_discrete
 #SBATCH -N 1
-#SBATCH -o log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean.out
-#SBATCH -e log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean.err
+#SBATCH -o log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_discrete.out
+#SBATCH -e log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_discrete.err
 #SBATCH -p kshdnormal
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
@@ -31,15 +31,14 @@ module load compiler/rocm/dtk-23.10
 ###########
 # Setting #
 ###########
-stage=1
+stage=0
 stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 # 0. libri2mix mixture without norm
 name="libri2mix"
 dataset="libri2mix" # Specify which dataset to infer
-config_name="config_log_mel_aux_5s.yaml"
+config_name="config_log_mel_aux_5s_nq_1.yaml"
 
-scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/list/test/mix.scp"
 mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
 ref_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/aux_s1.scp"
 
