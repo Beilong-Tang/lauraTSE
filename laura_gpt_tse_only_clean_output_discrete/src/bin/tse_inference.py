@@ -63,8 +63,8 @@ class TSExtraction:
         mix_mel_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
         aux_mel_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
 
-        mix, _ = self.model.encode(mix_mel, mix_mel_lens) # [1,T,D]
-        aux, _ = self.model.encode(ref_mel, aux_mel_lens) # [1,T,D]
+        mix, _ = self.model.encode_emb(mix_mel, mix_mel_lens) # [1,T,D]
+        aux, _ = self.model.encode_emb(ref_mel, aux_mel_lens) # [1,T,D]
         sep = self.model.lm_embedding(torch.tensor([[self.model.sep]], dtype = torch.int64, device = mix_mel.device)) # [1,1,D]
         text_outs = torch.cat([aux, sep, mix], dim = 1) # [1, T', D]
         text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
