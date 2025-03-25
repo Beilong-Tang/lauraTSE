@@ -29,6 +29,8 @@ def parse_args():
 
     parser.add_argument("--mix_wav_scp", type=str, default = None)
     parser.add_argument("--ref_wav_scp", type=str, default = None)
+    parser.add_argument("--mix_codec_scp", type=str, default = None)
+    parser.add_argument("--ref_codec_scp", type=str, default = None)
 
     parser.add_argument("--config", type=str)
     parser.add_argument("--model_ckpt", type=str)
@@ -62,13 +64,16 @@ def inference(rank, args):
 
     mix_wav_ids, mix_wav_paths = get_source_list(args.mix_wav_scp, ret_name=True)
     ref_wav_ids, ref_wav_paths = get_source_list(args.ref_wav_scp, ret_name=True)
-    
+    mix_codec_ids, mix_codec_paths = get_source_list(args.mix_codec_scp, ret_name=True)
+    ref_codec_ids, ref_codec_paths = get_source_list(args.ref_codec_scp, ret_name=True)
 
     scp_list = [] # [ [mix_wav, ref_wav, ref_codec], [...] ]
     for id in mix_wav_ids:
         mix_wav_path = mix_wav_paths[mix_wav_ids.index(id)]
         ref_wav_path = ref_wav_paths[ref_wav_ids.index(id)]
-        scp_list.append([mix_wav_path, ref_wav_path])
+        mix_codec_path = mix_codec_paths[mix_codec_ids.index(id)]
+        ref_codec_path = ref_codec_paths[ref_codec_ids.index(id)]
+        scp_list.append([mix_wav_path, ref_wav_path, mix_codec_path, ref_codec_path])
 
     scp = scp_list[rank::args.num_proc]
     # logger
@@ -83,9 +88,9 @@ def inference(rank, args):
     total_rtf = 0.0
     with torch.no_grad(), tqdm.tqdm(scp, desc=f"[inferencing...rank {rank}]") as pbar:
         for paths in pbar:
-            mix_wav_path, ref_wav_path = paths
+            mix_wav_path, ref_wav_path, mix_codec_path, ref_codec_path = paths
 
-            # 0. Mix Mel -> [1, T,]
+            # 0. Mix Mel -> [1, T, D]
             audio, sr = torchaudio.load(mix_wav_path)  # [1,T]
             mask = torch.tensor([audio.size(1)], dtype=torch.long)
             mix_mel, _ = mel_spec.mel(audio, mask)
@@ -99,6 +104,16 @@ def inference(rank, args):
             ref_mel, _ = mel_spec.mel(audio, mask)
             ref_mel = ref_mel.to(device)
             ## Limit the reference mel length
+
+            # 2. Mix Codec -> [1, T, N_q]
+            mix_codec = np.load(mix_codec_path)
+            mix_codec = torch.from_numpy(mix_codec).to(device).unsqueeze(0)
+
+            # 3. Ref Codec -> [1, T, N_q]
+            ref_codec = np.load(ref_codec_path)
+            ref_codec = torch.from_numpy(ref_codec).to(device).unsqueeze(0)
+            ref_codec = ref_codec[:,:int(25 * 10)]
+            
 
             # # 2. Ref Codec ->
             # ref_codec = np.load(ref_codec_path) # [T,N]

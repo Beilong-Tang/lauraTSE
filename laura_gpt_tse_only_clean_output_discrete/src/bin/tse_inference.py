@@ -50,7 +50,7 @@ class TSExtraction:
         self.beam_size = args.beam_size
 
     @torch.no_grad()
-    def __call__(self, mix_mel:torch.Tensor, ref_mel:torch.Tensor):
+    def __call__(self, mix_mel:torch.Tensor, ref_mel:torch.Tensor, mix_codec:torch.Tensor, ref_codec: torch.Tensor):
         """
         This function can also be used as TSE Inference.
         mix_mel the mep spec of the mixture: [1, T, D]
@@ -60,11 +60,11 @@ class TSExtraction:
         continual_length = None
         # text = torch.cat([ref_mel, mix_mel], dim = 1) # [1,T',D]
         # 1. Encode mix mel and ref mel
-        mix_mel_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
-        aux_mel_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
+        mix_lens = torch.tensor([mix_codec.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
+        aux_lens = torch.tensor([ref_codec.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
 
-        mix, _ = self.model.encode_emb(mix_mel, mix_mel_lens) # [1,T,D]
-        aux, _ = self.model.encode_emb(ref_mel, aux_mel_lens) # [1,T,D]
+        mix, _ = self.model.encode_emb(mix_codec, mix_lens) # [1,T,D]
+        aux, _ = self.model.encode_emb(ref_codec, aux_lens) # [1,T,D]
         sep = self.model.lm_embedding(torch.tensor([[self.model.sep]], dtype = torch.int64, device = mix_mel.device)) # [1,1,D]
         text_outs = torch.cat([aux, sep, mix], dim = 1) # [1, T', D]
         text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
@@ -82,6 +82,13 @@ class TSExtraction:
         #     decoded_codec[:, continual_length:], bit_width=None, run_mod="decode"
         # )
         # 3. predict embeddings
+        mix_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
+        aux_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
+        text_mel, text_mel_lengths = self.model.encode(mix_mel, mix_lens)
+        aux_mel, aux_mel_lengths = self.model.encode(ref_mel, aux_lens)
+        text_outs = torch.cat([aux_mel, sep, text_mel], dim = 1) # [1,T,D]
+        text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
+
         gen_speech = self.model.syn_audio(
             decoded_codec,
             text_outs,
