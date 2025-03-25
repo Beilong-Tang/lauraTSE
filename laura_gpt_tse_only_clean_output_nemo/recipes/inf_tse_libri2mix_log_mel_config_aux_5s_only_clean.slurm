@@ -35,9 +35,9 @@ stage=1
 stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 # 0. libri2mix mixture without norm
-name="libri2mix"
-dataset="libri2mix" # Specify which dataset to infer
-config_name="config_log_mel_aux_5s.yaml"
+# name="libri2mix"
+# dataset="libri2mix" # Specify which dataset to infer
+# config_name="config_log_mel_aux_5s.yaml"
 
 scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/list/test/mix.scp"
 mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
@@ -63,19 +63,19 @@ wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16
 ###############
 # DONT CHANGE #
 ###############
-config_path=exp/$name/$config_name
-output_dir="output/$name/$dataset/$(basename $config_name .yaml)"
-model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
+# config_path=exp/$name/$config_name
+output_dir="../sv_output/laura_gpt_tse_only_clean_output_nemo/output/libri2mix/libri2mix/config_log_mel_aux_5s_nemo_sv"
+# model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 
 #######
 # Run #
 #######
 
-if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
-echo "[Inference]"
-python src/infer.py --mix_wav_scp $mix_wav_scp --ref_wav_scp $ref_wav_scp \
- --config $config_path --model_ckpt $model_ckpt --output_dir "$output_dir/wavs" --num_proc $num_proc --gpus $gpus
-fi
+# if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
+# echo "[Inference]"
+# python src/infer.py --mix_wav_scp $mix_wav_scp --ref_wav_scp $ref_wav_scp \
+#  --config $config_path --model_ckpt $model_ckpt --output_dir "$output_dir/wavs" --num_proc $num_proc --gpus $gpus
+# fi
 
 
 ########
