@@ -39,7 +39,7 @@ def setup_seed(seed, rank):
 
 
 ## ddp process
-def setup(rank, world_size, backend, port=12355):
+def setup(rank, world_size, backend, port=12340):
     os.environ["MASTER_ADDR"] = "127.0.0.1"
     os.environ["MASTER_PORT"] = str(port)
     # initialize the process group
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, default=None, help="path to yaml config")
     parser.add_argument("--ckpt_path", type=str, required=True)
     parser.add_argument("--resume", type=str, nargs="?", const="")
-    parser.add_argument("--port", default = 12355, type = int)
+    parser.add_argument("--port", default = 12000, type = int)
     ##############
     # DDP Config #
     ##############
