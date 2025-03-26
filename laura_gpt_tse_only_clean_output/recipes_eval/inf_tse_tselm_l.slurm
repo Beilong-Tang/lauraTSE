@@ -123,14 +123,5 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
   echo "NISQA inference finished"
   cd $cur_dir
   echo "NISQA Merging"
-python -c "import pandas as pd; \
-file_path = '$output_dir/NISQA_results.csv'; \
-file = pd.read_csv(file_path); \
-context = file['mos_pred'].mean(); \
-context = 'NISQA average mos: ' + str(context); \
-print(context); \
-with open('$output_dir/NISQA_mos.txt', 'w') as f: \
-    print(context, file=f)"
-
-
+  python recipes_eval/nisqa_merge.py --output_dir $output_dir
 fi
