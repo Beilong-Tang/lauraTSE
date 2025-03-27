@@ -32,7 +32,7 @@ module load compiler/rocm/dtk-23.10
 # Setting #
 ###########
 stage=0
-stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
+stop_stage=5  # 0: infer, 1: WER + SPKSIM 2: DNSMOS 3: NISQA 4: SpeechBert 5: WavLM Base Plus SV
 
 # 0. libri2mix mixture without norm
 name="libri2mix"
@@ -105,4 +105,39 @@ if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
   # DNSMOS
   echo "[DNSMOS 16k]"
   python src/eval/dnsmos.py --model_dir $dns_model_dir -t "$output_dir/wavs" -o "$output_dir/dnsmos.csv"
+fi
+
+
+#################################
+# NISQA, SpeechBert, wavlm_base #
+#################################
+nisqa_dir="/public/home/qinxy/bltang/pkg/NISQA" # The path contaitning the NISQA code and ckpts
+
+if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
+  # NISQA
+  echo "[NISQA]"
+  cur_dir=$(pwd)
+  cd $nisqa_dir
+  python run_predict.py --mode predict_dir --pretrained_model weights/nisqa.tar \
+   --data_dir $output_dir/wavs --num_workers 0 --bs 10 \
+   --output_dir $output_dir
+  echo "NISQA inference finished"
+  cd $cur_dir
+  echo "NISQA Merging"
+  python recipes_eval/nisqa_merge.py --output_dir $output_dir
+fi
+
+if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
+  # SpeechBert
+  echo "[SpeechBert]"
+  python src/eval/speech_bert.py --test_dir "$output_dir/wavs" \
+  --ref_dir "$libri2mix_clean_dir" --out_dir "$output_dir"
+fi
+
+
+if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
+  # WavLM Base Plus SV SpkSim
+  echo "[WavLM Base Plus SV SpkSim]"
+  python src/eval/wavlm_base_plus_sv_spksim_eval.py --test_dir "$output_dir/wavs" \
+  --ref_dir "$libri2mix_clean_dir" --out_dir "$output_dir"
 fi
