@@ -81,6 +81,7 @@ class Trainer:
         self.scheduler = scheduler
         self.new_bob = config.new_bob
         self.cv_log = {}
+        self.epoch_duration = None
         ## Mel Spectrogram
 
         if config.mel_config is not None: 
@@ -230,21 +231,27 @@ class Trainer:
 
     def _train(self, optim, tr_data, epoch):
         self.model.train()
-        total = int((len(tr_data) * 1) * self.config.epoch)
         start_time = time.time()
+        _epoch_start_time = time.time()
         for batch, data in enumerate(tr_data):
             if_log = batch % self.log_interval == 0
             res = self._train_one_batch(batch, data, optim, if_log, epoch)
             if if_log:
                 res["epoch"] = epoch
                 time_per_batch = (time.time() - start_time) / self.log_interval
-                res[
+                if self.epoch_duration is None:
+                    res[
                     "p"
-                ] = f"[{self.step}/{total}|({str(timedelta(seconds=((total-self.step) * time_per_batch)))})]"
+                    ] = f"[{self.step}/{self.step + self.step_left}|({str(timedelta(seconds=(self.step_left * time_per_batch)))})]"
+                else:
+                    res['p'] = f"[{self.step}/{self.step + self.step_left}|({str(timedelta(self.step_left * (self.epoch_duration / len(tr_data))))})]"
+                    pass
                 res["time/batch"] = f"{time_per_batch}s"
                 start_time = time.time()
                 self._log(f"tr, {dict_to_str(res)}")
             self.step += 1
+            self.step_left -=1
+        self.epoch_duration = time.time() - _epoch_start_time
 
     def _eval(self, cv_data, epoch):
         self.model.eval()
@@ -273,6 +280,11 @@ class Trainer:
             self._log(f"...epoch {epoch}...")
             tr_data = self.tr_data.build_iter(epoch)
             cv_data = self.cv_data.build_iter(epoch, shuffle=False)
+            
+            ## Initialize steps left
+            if epoch == self.epoch_start:
+                self.step_left = int((self.config.epoch - self.epoch_start) * len(tr_data))
+
             ### training
             self._train(self.optim, tr_data, epoch)
             #### evaluation
