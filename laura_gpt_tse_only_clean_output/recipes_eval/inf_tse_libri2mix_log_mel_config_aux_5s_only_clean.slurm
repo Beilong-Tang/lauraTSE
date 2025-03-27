@@ -1,14 +1,17 @@
 #!/bin/bash
-#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28
+#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean
 #SBATCH -N 4
-#SBATCH -o log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28.out
-#SBATCH -e log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28.err
+#SBATCH -o log_eval/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean.out
+#SBATCH -e log_eval/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean.err
 #SBATCH -p kshdnormal
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=dcu:4
 
 #### Special Note ####
+#
+# Evaluate on the basic libri2mix
+#
 
 # Set bash to 'debug' mode, it will exit on :
 # -e 'error', -o ... 'error in pipeline', -x 'print commands',
@@ -37,9 +40,9 @@ stage=1
 stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 # 0. libri2mix mixture without norm
-name="libri2mix"
-dataset="libri2mix" # Specify which dataset to infer
-config_name="config_log_mel_aux_5s_finetune_librispeech_epoch_28.yaml"
+# name="libri2mix"
+# dataset="libri2mix" # Specify which dataset to infer
+# config_name="config_log_mel_aux_5s_finetune_librispeech_epoch_28.yaml"
 
 
 mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
@@ -66,19 +69,19 @@ wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16
 ###############
 # DONT CHANGE #
 ###############
-config_path=exp/$name/$config_name
+# config_path=exp/$name/$config_name
 output_dir="output/$name/$dataset/$(basename $config_name .yaml)"
-model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
+# model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 
 #######
 # Run #
 #######
 
-if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
-echo "[Inference]"
-python src/infer.py --mix_wav_scp $mix_wav_scp --ref_wav_scp $ref_wav_scp \
- --config $config_path --model_ckpt $model_ckpt --output_dir "$output_dir/wavs" --num_proc $num_proc --gpus $gpus
-fi
+# if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
+# echo "[Inference]"
+# python src/infer.py --mix_wav_scp $mix_wav_scp --ref_wav_scp $ref_wav_scp \
+#  --config $config_path --model_ckpt $model_ckpt --output_dir "$output_dir/wavs" --num_proc $num_proc --gpus $gpus
+# fi
 
 
 ########
