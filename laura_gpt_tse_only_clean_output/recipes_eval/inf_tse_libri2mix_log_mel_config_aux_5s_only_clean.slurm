@@ -10,7 +10,7 @@
 
 #### Special Note ####
 #
-# Evaluate on the basic libri2mix
+# Evaluate on the basic libri2mix 50 epochs 
 #
 
 # Set bash to 'debug' mode, it will exit on :

@@ -74,7 +74,7 @@ def run_eval(rank, args):
     model = WavLMForXVector.from_pretrained(WAVLM_BASE_PLUS_SV)
     cosine_sim = torch.nn.CosineSimilarity(dim=-1)
 
-    device = args.gpus[rank % len(args.gpus)]
+    device = args.gpus[rank % args.num_proc]
     model.to(device)
 
     res = []
