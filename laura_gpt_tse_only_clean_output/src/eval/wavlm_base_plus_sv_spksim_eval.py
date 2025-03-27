@@ -58,7 +58,7 @@ def main(args):
         _out_audio, _ = librosa.load(_out_path, sr=None)
         _ref_audio, _ = librosa.load(_ref_path, sr=None)
         audios = [_out_audio, _ref_audio]
-        inputs = feature_extractor(audios, padding=True, return_tensors="pt")
+        inputs = feature_extractor(audios, sampling_rate = 16000,  padding=True, return_tensors="pt")
         embeddings = model(**inputs).embeddings
         embeddings = torch.nn.functional.normalize(embeddings, dim=-1).cpu()
         similarity = cosine_sim(embeddings[0], embeddings[1]).item()
