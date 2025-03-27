@@ -46,7 +46,9 @@ def main(args):
     ref_audio_path_dict = dict([(Path(p).stem, p) for p in ref_audio_paths])
 
     out_audio_paths = glob.glob(op.join(args.test_dir, ".wav"))
+    print(len(out_audio_paths))
     out_audio_path_dict = dict([(Path(p).stem, p) for p in out_audio_paths])
+    print(len(out_audio_path_dict))
 
     res = []
     for _k, _out_path in tqdm.tqdm(out_audio_path_dict):
