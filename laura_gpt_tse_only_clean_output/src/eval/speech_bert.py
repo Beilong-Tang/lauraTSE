@@ -13,8 +13,9 @@ from pathlib import Path
 import argparse
 import tqdm
 import librosa
+print("Importing")
 from discrete_speech_metrics import SpeechBERTScore
-
+print("Finished Importing")
 
 
 def parse_argss():
@@ -56,7 +57,7 @@ def main(args):
         _out_audio, _ = librosa.load(_out_path, sr=None)
         _ref_audio, _ = librosa.load(_ref_path, sr=None)
         precision, _, _ = metrics.score(_ref_audio, _out_audio)
-        res.append({"name": Path(_out_audio).stem ,"precision": precision})
+        res.append({"name": Path(_out_path).stem ,"precision": precision})
     
     df = pd.DataFrame(res)
     print(df.describe())
