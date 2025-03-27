@@ -36,8 +36,8 @@ module load compiler/rocm/dtk-23.10
 ###########
 # Setting #
 ###########
-stage=1
-stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
+stage=3
+stop_stage=4 # 0: infer, 1: WER + SPKSIM 2. DNSMOS 3. NISQA 4. SpeechBert 5. WavLM Base Plus SV
 
 # 0. libri2mix mixture without norm
 # name="libri2mix"
@@ -112,9 +112,9 @@ if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
 fi
 
 
-##################################
+#################################
 # NISQA, SpeechBert, wavlm_base #
-#####################################
+#################################
 nisqa_dir="/public/home/qinxy/bltang/pkg/NISQA" # The path contaitning the NISQA code and ckpts
 
 if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
