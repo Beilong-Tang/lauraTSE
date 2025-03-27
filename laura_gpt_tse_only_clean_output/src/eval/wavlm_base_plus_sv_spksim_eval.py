@@ -21,6 +21,7 @@ from pathlib import Path
 
 print("Importing")
 import torch
+import torch.multiprocessing as mp
 from transformers import Wav2Vec2FeatureExtractor, WavLMForXVector
 print("Done")
 
@@ -32,19 +33,41 @@ def parse_args():
 
     # Output specific
     p.add_argument('--out_dir',type=str, required=True, help = "the directory to put the log results into")
+
+    # ddp 
+    p.add_argument('--gpus', nargs="+", default= ["cuda:0", "cuda:1", "cuda:2", "cuda:3"])
+    p.add_argument('--num_proc', type = int, default=8)
     return p.parse_args()
 
 def main(args):
+    os.makedirs(str(Path(args.out_dir) / '.temp'), exist_ok=True)
+    mp.spawn(run_eval, args=(args,), nprocs=args.num_proc, join = True)
+    ## Merge the results
+    res = None
+    for _r in range(args.num_proc):
+        _csv_path = str(Path(args.out_dir) / '.temp' / f"wavlm_base_plus_sv_spksim_temp_{_r}.csv")
+        df = pd.read_csv(_csv_path)
+        if res is None:
+            res = df
+        else:
+            res = pd.concat([res, df], axis = 0)
+    print(f"WavLM Base Plus SV SpkSim:\n{res.describe()}")
+    with open(str(Path(args.out_dir)  / "wavlm_base_plus_sv_spksim.txt"), "w") as f:
+        print(f"WavLM Base Plus SV SpkSim:\n{res.describe()}", file = f)
+    res.to_csv(str(Path(args.out_dir) / f"wavlm_base_plus_sv_spksim.csv"))
+    print("Done!")
 
+
+def run_eval(rank, args):
     suffix = args.ref_suffix
-
     ## Dataset
     ref_audio_paths = glob.glob(op.join(args.ref_dir, f'*.{suffix}'))
     ref_audio_path_dict = dict([(Path(p).stem, p) for p in ref_audio_paths])
 
-    out_audio_paths = glob.glob(op.join(args.test_dir, "*.wav"))
+    out_audio_paths = sorted(glob.glob(op.join(args.test_dir, "*.wav")))
+    out_audio_paths = out_audio_paths[rank::args.word_size]
     out_audio_path_dict = dict([(Path(p).stem, p) for p in out_audio_paths])
-    print(f"Evaluation on len {len(out_audio_path_dict)}")
+    print(f"Evaluation on len {len(out_audio_path_dict)} at rank {rank}")
 
     ## Model
     feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(WAVLM_BASE_PLUS_SV)
@@ -52,7 +75,7 @@ def main(args):
     cosine_sim = torch.nn.CosineSimilarity(dim=-1)
 
     res = []
-    for _k, _out_path in tqdm.tqdm(out_audio_path_dict.items()):
+    for _k, _out_path in tqdm.tqdm(out_audio_path_dict.items(), desc=f"[rank {rank}]"):
         _ref_path = ref_audio_path_dict.get(_k)
         assert _ref_path is not None
         _out_audio, _ = librosa.load(_out_path, sr=None)
@@ -65,10 +88,12 @@ def main(args):
         res.append({"name": Path(_out_path).stem ,"similarity": similarity})
 
     df = pd.DataFrame(res)
-    print(df.describe())
-    with open(str(Path(args.out_dir) / "wavlm_base_plus_sv_spksim.txt"), "w") as f:
-        print(f"WavLM Base Plus SV SpkSim:\n{df.describe()}", file = f)
-    df.to_csv(str(Path(args.out_dir) / "wavlm_base_plus_sv_spksim_results.csv"))
+    # print(df.describe())
+    # with open(str(Path(args.out_dir) / '.temp' / "wavlm_base_plus_sv_spksim.txt"), "w") as f:
+    #     print(f"WavLM Base Plus SV SpkSim:\n{df.describe()}", file = f)
+    df.to_csv(str(Path(args.out_dir) / '.temp' / f"wavlm_base_plus_sv_spksim_temp_{rank}.csv"))
+
+    pass
 
 if __name__ == "__main__":
     args = parse_args()
