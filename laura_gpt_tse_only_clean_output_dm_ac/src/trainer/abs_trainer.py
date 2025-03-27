@@ -189,7 +189,7 @@ class Trainer:
         if self.patience_epoch is not None:
             if epoch <= self.patience_epoch:
                 self.scheduler.step()
-        # torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
         if if_log:
             stats["lr"] = optim.param_groups[0]["lr"]
             return stats
