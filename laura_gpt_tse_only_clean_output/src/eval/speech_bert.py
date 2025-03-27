@@ -11,6 +11,8 @@ import pandas as pd
 import glob
 from pathlib import Path
 import argparse
+import tqdm
+import librosa
 from discrete_speech_metrics import SpeechBERTScore
 
 
@@ -28,7 +30,7 @@ def parse_argss():
     p.add_argument('--ref_suffix', type = str, default = 'wav')
 
     # Output specific
-    p.add_argument('--out_path',type=str, required=True)
+    p.add_argument('--out_dir',type=str, required=True, help = "the directory to put the log results into")
 
     return p.parse_args()
 
@@ -38,7 +40,7 @@ def main(args):
                               layer=args.layer,
                               use_gpu=True)
     
-    suffix = args.test_suffix
+    suffix = args.ref_suffix
 
     ref_audio_paths = glob.glob(op.join(args.ref_dir, f'*.{suffix}'))
     ref_audio_path_dict = dict([(Path(p).stem, p) for p in ref_audio_paths])
@@ -46,18 +48,20 @@ def main(args):
     out_audio_paths = glob.glob(op.join(args.test_dir, ".wav"))
     out_audio_path_dict = dict([(Path(p).stem, p) for p in out_audio_paths])
 
-    for _k, _out_path in out_audio_path_dict:
+    res = []
+    for _k, _out_path in tqdm.tqdm(out_audio_path_dict):
         _ref_path = ref_audio_path_dict.get(_k)
         assert _ref_path is not None
-        
+        _out_audio, _ = librosa.load(_out_path, sr=None)
+        _ref_audio, _ = librosa.load(_ref_path, sr=None)
+        precision, _, _ = metrics.score(_ref_audio, _out_audio)
+        res.append({"name": Path(_out_audio).stem ,"precision": precision})
     
-
-
-
-
-
-
-
+    df = pd.DataFrame(res)
+    print(df.describe())
+    with open(str(Path(args.out_dir) / "speech_bert.txt"), "w") as f:
+        print(f"Speech Bert Score:\n{df.describe()}", file = f)
+    df.to_csv(str(Path(args.out_dir) / "speech_bert_results.csv"))
 if __name__ == "__main__":
     args = parse_argss()
     main(args)
