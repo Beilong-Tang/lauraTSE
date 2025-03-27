@@ -92,11 +92,11 @@ class Trainer:
         self.mel_process = MelSpec(**config.mel_config)
         self.normalize = Normalize()
 
-
+        print(config)
         self.patience_sched = PatienceScheduler(self.optim)
         ## Add the Patience optimizer
-        if config.get("patience") is not None:
-            self.patience_epoch = config.get("patience")['epoch']
+        if config.patience is not None:
+            self.patience_epoch = config.patience['epoch']
         else:
             self.patience_epoch = None
 
