@@ -11,7 +11,7 @@ from funcodec.iterators.sequence_iter_factory import SequenceIterFactory
 from funcodec.torch_utils.recursive_op import recursive_average
 from utils.utils import Logger
 
-from .helper import dict_to_str, save, save_stats
+from .helper import dict_to_str, save
 from utils.hinter import hint_once 
 
 from funcodec.modules.nets_utils import pad_list
@@ -291,6 +291,5 @@ class Trainer:
                 self.step,
                 save_best,
             )
-            ### save stats log
-            save_stats(Path(self.ckpt_dir) / f"stats_epoch_{epoch}.pkl", {"cv_log":self.cv_log})
+
             dist.barrier()

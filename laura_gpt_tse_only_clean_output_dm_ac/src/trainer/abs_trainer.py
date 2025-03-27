@@ -11,11 +11,12 @@ from funcodec.iterators.sequence_iter_factory import SequenceIterFactory
 from funcodec.torch_utils.recursive_op import recursive_average
 from utils.utils import Logger
 
-from .helper import dict_to_str, save
+from .helper import dict_to_str, save, save_stats
 from utils.hinter import hint_once 
 from utils.postprocess import MaxLength, Normalize
 from schedulers.patience import PatienceScheduler
 from funcodec.modules.nets_utils import pad_list
+from pathlib import Path 
 
 from utils.dprint import dprint
 
@@ -338,5 +339,6 @@ class Trainer:
                     self.patience_sched.step(-result)
                 else:
                     self.patience_sched.step(result)
-
+                    
+            save_stats(Path(self.ckpt_dir) / f"stats_epoch_{epoch}.pkl", {"cv_log":self.cv_log})
             dist.barrier()
