@@ -14,7 +14,7 @@ from utils.utils import Logger
 from .helper import dict_to_str, save
 from utils.hinter import hint_once 
 from utils.postprocess import MaxLength, Normalize
-from funcodec.bin.codec_inference import Speech2Token
+from schedulers.patience import PatienceScheduler
 from funcodec.modules.nets_utils import pad_list
 
 from utils.dprint import dprint
@@ -93,6 +93,14 @@ class Trainer:
         self.normalize = Normalize()
 
 
+        self.patience_sched = PatienceScheduler(self.optim)
+        ## Add the Patience optimizer
+        if config.get("patience") is not None:
+            self.patience_epoch = config.get("patience")['epoch']
+        else:
+            self.patience_epoch = None
+
+
         if resume != "":
             ## loading ckpt
             self._log(f"loading model from {resume}...")
@@ -149,7 +157,7 @@ class Trainer:
         return _data_res
         pass
 
-    def _train_one_batch(self, batch, data, optim, if_log) -> dict:
+    def _train_one_batch(self, batch, data, optim, if_log, epoch) -> dict:
         uttid, _data = data
 
         ## Post process:
@@ -178,8 +186,10 @@ class Trainer:
         torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
         optim.step()
         optim.zero_grad()
-        self.scheduler.step()
-        torch.cuda.empty_cache()
+        if self.patience_epoch is not None:
+            if epoch <= self.patience_epoch:
+                self.scheduler.step()
+        # torch.cuda.empty_cache()
         if if_log:
             stats["lr"] = optim.param_groups[0]["lr"]
             return stats
@@ -242,7 +252,7 @@ class Trainer:
         start_time = time.time()
         for batch, data in enumerate(tr_data):
             if_log = batch % self.log_interval == 0
-            res = self._train_one_batch(batch, data, optim, if_log)
+            res = self._train_one_batch(batch, data, optim, if_log, epoch)
             if if_log:
                 res["epoch"] = epoch
                 time_per_batch = (time.time() - start_time) / self.log_interval
@@ -309,4 +319,12 @@ class Trainer:
                 self.step,
                 save_best,
             )
+            
+            ### apply patience
+            if self.patience_epoch is not None and self.patience_epoch > epoch:
+                if self.best_save_type == "ascend":
+                    self.patience_sched.step(-result)
+                else:
+                    self.patience_sched.step(result)
+
             dist.barrier()
