@@ -1,17 +1,14 @@
 #!/bin/bash
-#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_wsj0_2mix
-#SBATCH -N 1
-#SBATCH -o log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_wsj0_2mix.out
-#SBATCH -e log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_wsj0_2mix.err
+#SBATCH -J inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28
+#SBATCH -N 4
+#SBATCH -o log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28.out
+#SBATCH -e log/inf_tse_libri2mix_log_mel_config_aux_5s_only_clean_finetune_librispeech_epoch_28.err
 #SBATCH -p kshdnormal
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=dcu:4
 
-
 #### Special Note ####
-# Train on libri2mix
-# Infer on WSj0-2mix
 
 # Set bash to 'debug' mode, it will exit on :
 # -e 'error', -o ... 'error in pipeline', -x 'print commands',
@@ -36,19 +33,21 @@ module load compiler/rocm/dtk-23.10
 ###########
 # Setting #
 ###########
-stage=2
+stage=1
 stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 # 0. libri2mix mixture without norm
 name="libri2mix"
-dataset="wsj0_2mix" # Specify which dataset to infer
-config_name="config_log_mel_aux_5s.yaml"
-
-mix_wav_scp="/public/home/qinxy/bltang/data/wsj0_target/min/tt/list/mix.scp"
-ref_wav_scp="/public/home/qinxy/bltang/data/wsj0_target/min/tt/list/aux_s1.scp"
+dataset="libri2mix" # Specify which dataset to infer
+config_name="config_log_mel_aux_5s_finetune_librispeech_epoch_28.yaml"
 
 
-wsj0_2mix_clean_dir="/public/home/qinxy/bltang/data/wsj0_target/min/tt/s1" # for wespeaker only
+mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
+ref_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/aux_s1.scp"
+
+
+
+libri2mix_clean_dir="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/test/s1" # for wespeaker only
 
 # DDP #
 num_proc=8
@@ -62,7 +61,7 @@ wer_model="base"
 wer_num_proc=8
 
 # DONT CHANGE #
-wer_reference="/public/home/qinxy/bltang/data/wsj0_target/min/tt/generate/whisper/whisper_$wer_model.txt"
+wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16k/min/whisper/whisper_$wer_model.txt"
 
 ###############
 # DONT CHANGE #
@@ -101,10 +100,45 @@ if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
   # SPK SIM
   echo "[SPKSIM WeSpeaker]"
   python src/eval/wespeaker_eval.py -t "$output_dir/wavs" \
-    -r $wsj0_2mix_clean_dir -o "$output_dir/wespeaker.csv" 
+    -r $libri2mix_clean_dir -o "$output_dir/wespeaker.csv" 
 
   echo "[Evaluation]"
   # DNSMOS
   echo "[DNSMOS 16k]"
   python src/eval/dnsmos.py --model_dir $dns_model_dir -t "$output_dir/wavs" -o "$output_dir/dnsmos.csv"
+fi
+
+
+##################################
+# NISQA, SpeechBert, wavlm_base #
+#####################################
+nisqa_dir="/public/home/qinxy/bltang/pkg/NISQA" # The path contaitning the NISQA code and ckpts
+
+if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
+  # NISQA
+  echo "[NISQA]"
+  cur_dir=$(pwd)
+  cd $nisqa_dir
+  python run_predict.py --mode predict_dir --pretrained_model weights/nisqa.tar \
+   --data_dir $output_dir/wavs --num_workers 0 --bs 10 \
+   --output_dir $output_dir
+  echo "NISQA inference finished"
+  cd $cur_dir
+  echo "NISQA Merging"
+  python recipes_eval/nisqa_merge.py --output_dir $output_dir
+fi
+
+if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
+  # SpeechBert
+  echo "[SpeechBert]"
+  python src/eval/speech_bert.py --test_dir "$output_dir/wavs" \
+  --ref_dir "$libri2mix_clean_dir" --out_dir "$output_dir"
+fi
+
+
+if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
+  # WavLM Base Plus SV SpkSim
+  echo "[WavLM Base Plus SV SpkSim]"
+  python src/eval/wavlm_base_plus_sv_spksim_eval.py --test_dir "$output_dir/wavs" \
+  --ref_dir "$libri2mix_clean_dir" --out_dir "$output_dir"
 fi
