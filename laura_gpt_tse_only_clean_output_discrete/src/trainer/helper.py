@@ -3,6 +3,8 @@ import os.path as op
 import re
 import torch
 from typing import Union
+from pathlib import Path 
+import pickle
 
 
 def dict_to_str(dictionary):
@@ -37,6 +39,15 @@ def normalize_result(result: dict, length: int):
         else:
             result[key] = result[key] / length
     return result
+
+def save_stats(path, content):
+    ## TODO: Finish Saving the stats
+    dirname = op.dirname(path)
+    files = [f for f in os.listdir(dirname) if (f.endswith(".pkl") and f.startswith("stats_epoch"))]
+    for f in files:
+        os.remove(str(Path(dirname) / f))
+    with open(path, "wb") as f:
+        pickle.dump(content, f)
 
 
 def save(path, content, epoch, max_ckpt=1):

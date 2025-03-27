@@ -49,10 +49,6 @@ def save_stats(path, content):
         os.remove(str(Path(dirname) / f))
     with open(path, "wb") as f:
         pickle.dump(content, f)
-    
-
-    
-    pass
 
 def save(path, content, epoch, max_ckpt=1):
     # if len(files_path) >= max_ckpt:
