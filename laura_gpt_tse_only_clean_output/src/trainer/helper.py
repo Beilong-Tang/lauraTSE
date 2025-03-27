@@ -40,6 +40,7 @@ def normalize_result(result: dict, length: int):
 
 
 def save_stats(path):
+    ## TODO: Finish Saving the stats
     dirname = op.dirname(path)
     files = [f for f in os.listdir(dirname) if (f.endswith(".pkl"))]
 
