@@ -51,7 +51,7 @@ def main(args):
     print(len(out_audio_path_dict))
 
     res = []
-    for _k, _out_path in tqdm.tqdm(out_audio_path_dict):
+    for _k, _out_path in tqdm.tqdm(out_audio_path_dict.items()):
         _ref_path = ref_audio_path_dict.get(_k)
         assert _ref_path is not None
         _out_audio, _ = librosa.load(_out_path, sr=None)
