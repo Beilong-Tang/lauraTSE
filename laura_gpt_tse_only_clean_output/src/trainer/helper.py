@@ -39,6 +39,13 @@ def normalize_result(result: dict, length: int):
     return result
 
 
+def save_stats(path):
+    dirname = op.dirname(path)
+    files = [f for f in os.listdir(dirname) if (f.endswith(".pkl"))]
+
+    
+    pass
+
 def save(path, content, epoch, max_ckpt=1):
     # if len(files_path) >= max_ckpt:
     if max_ckpt == -1:
