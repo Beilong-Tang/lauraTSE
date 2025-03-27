@@ -45,8 +45,8 @@ stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 # config_name="config_log_mel_aux_5s_finetune_librispeech_epoch_28.yaml"
 
 
-mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
-ref_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/aux_s1.scp"
+# mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
+# ref_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/aux_s1.scp"
 
 
 
@@ -70,7 +70,7 @@ wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16
 # DONT CHANGE #
 ###############
 # config_path=exp/$name/$config_name
-output_dir="output/$name/$dataset/$(basename $config_name .yaml)"
+output_dir="/public/home/qinxy/bltang/laura_gpt/laura_gpt_tse_funcodec/laura_gpt_tse_only_clean_output/output/libri2mix/libri2mix/config_log_mel_aux_5s"
 # model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 
 #######
