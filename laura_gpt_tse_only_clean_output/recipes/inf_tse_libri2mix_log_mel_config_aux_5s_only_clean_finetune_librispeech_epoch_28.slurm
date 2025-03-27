@@ -128,9 +128,17 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
   python recipes_eval/nisqa_merge.py --output_dir $output_dir
 fi
 
-if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
+if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
   # SpeechBert
   echo "[SpeechBert]"
   python src/eval/speech_bert.py --test_dir "$output_dir/wavs" \
+  --ref_dir "$libri2mix_clean_dir" --out_dir "$output_dir"
+fi
+
+
+if [ ${stage} -le 5 ] && [ ${stop_stage} -ge 5 ]; then
+  # WavLM Base Plus SV SpkSim
+  echo "[WavLM Base Plus SV SpkSim]"
+  python src/eval/wavlm_base_plus_sv_spksim_eval.py --test_dir "$output_dir/wavs" \
   --ref_dir "$libri2mix_clean_dir" --out_dir "$output_dir"
 fi
