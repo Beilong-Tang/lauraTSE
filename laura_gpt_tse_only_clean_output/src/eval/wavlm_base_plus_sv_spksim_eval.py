@@ -65,7 +65,7 @@ def run_eval(rank, args):
     ref_audio_path_dict = dict([(Path(p).stem, p) for p in ref_audio_paths])
 
     out_audio_paths = sorted(glob.glob(op.join(args.test_dir, "*.wav")))
-    out_audio_paths = out_audio_paths[rank::args.word_size]
+    out_audio_paths = out_audio_paths[rank::args.num_proc]
     out_audio_path_dict = dict([(Path(p).stem, p) for p in out_audio_paths])
     print(f"Evaluation on len {len(out_audio_path_dict)} at rank {rank}")
 
@@ -74,6 +74,9 @@ def run_eval(rank, args):
     model = WavLMForXVector.from_pretrained(WAVLM_BASE_PLUS_SV)
     cosine_sim = torch.nn.CosineSimilarity(dim=-1)
 
+    device = args.gpus[rank % args.num_proc]
+    model.to(device)
+
     res = []
     for _k, _out_path in tqdm.tqdm(out_audio_path_dict.items(), desc=f"[rank {rank}]"):
         _ref_path = ref_audio_path_dict.get(_k)
@@ -81,7 +84,7 @@ def run_eval(rank, args):
         _out_audio, _ = librosa.load(_out_path, sr=None)
         _ref_audio, _ = librosa.load(_ref_path, sr=None)
         audios = [_out_audio, _ref_audio]
-        inputs = feature_extractor(audios, sampling_rate = 16000,  padding=True, return_tensors="pt")
+        inputs = feature_extractor(audios, sampling_rate = 16000,  padding=True, return_tensors="pt").to(device)
         embeddings = model(**inputs).embeddings
         embeddings = torch.nn.functional.normalize(embeddings, dim=-1).cpu()
         similarity = cosine_sim(embeddings[0], embeddings[1]).item()
