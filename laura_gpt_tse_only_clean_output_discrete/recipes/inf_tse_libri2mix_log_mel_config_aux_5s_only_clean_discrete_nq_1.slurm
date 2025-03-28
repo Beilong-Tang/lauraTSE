@@ -117,7 +117,6 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
   # NISQA
   echo "[NISQA]"
   cur_dir=$(pwd)
-  echo $cur_dir
   cd $nisqa_dir
   # python run_predict.py --mode predict_dir --pretrained_model weights/nisqa.tar \
   #  --data_dir $output_dir/wavs --num_workers 0 --bs 10 \
