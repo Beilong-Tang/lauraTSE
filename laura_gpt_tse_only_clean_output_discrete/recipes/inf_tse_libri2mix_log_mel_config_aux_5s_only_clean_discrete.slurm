@@ -31,7 +31,7 @@ module load compiler/rocm/dtk-23.10
 ###########
 # Setting #
 ###########
-stage=0
+stage=3
 stop_stage=5  # 0: infer, 1: WER + SPKSIM 2: DNSMOS 3: NISQA 4: SpeechBert 5: WavLM Base Plus SV
 
 # 0. libri2mix mixture without norm
@@ -66,6 +66,7 @@ wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16
 ###############
 config_path=exp/$name/$config_name
 output_dir="output/$name/$dataset/$(basename $config_name .yaml)"
+output_dir=$(realpath $output_dir) # Add Change it to absolute path, as NISQA changes the directory
 model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 
 #######
