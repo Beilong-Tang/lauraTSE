@@ -334,7 +334,7 @@ class Trainer:
             )
             
             ### apply patience
-            if self.patience_epoch is not None and self.patience_epoch > epoch:
+            if self.patience_epoch is not None and epoch > self.patience_epoch:
                 if self.best_save_type == "ascend":
                     self.patience_sched.step(-result)
                 else:
