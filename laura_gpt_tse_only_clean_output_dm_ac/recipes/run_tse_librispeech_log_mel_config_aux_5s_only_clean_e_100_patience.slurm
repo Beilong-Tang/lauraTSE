@@ -29,7 +29,7 @@ module load compiler/rocm/dtk-23.10
 
 name="librispeech"
 config_path=exp/$name/config_log_mel_aux_5s_e_100_patience.yaml
-resume="ckpt/librispeech/config_log_mel_aux_5s/epoch49.pth"
+resume="ckpt/librispeech/config_log_mel_aux_5s_e_100_patience/epoch63.pth"
 
 ###############
 # DONT CHANGE #
