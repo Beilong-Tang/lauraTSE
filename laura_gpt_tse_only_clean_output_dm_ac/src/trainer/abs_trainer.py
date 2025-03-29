@@ -264,7 +264,7 @@ class Trainer:
                     "p"
                     ] = f"[{self.step}/{self.step + self.step_left}|({str(timedelta(seconds=(self.step_left * time_per_batch)))})]"
                 else:
-                    res['p'] = f"[{self.step}/{self.step + self.step_left}|({str(timedelta(self.step_left * (self.epoch_duration / len(tr_data))))})]"
+                    res['p'] = f"[{self.step}/{self.step + self.step_left}|({str(timedelta(seconds = (self.step_left * (self.epoch_duration / len(tr_data)))))})]"
                     pass
                 res["time/batch"] = f"{time_per_batch}s"
                 start_time = time.time()
