@@ -70,7 +70,7 @@ wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16
 # DONT CHANGE #
 ###############
 # config_path=exp/$name/$config_name
-output_dir="/public/home/qinxy/bltang/laura_gpt/laura_gpt_tse_funcodec/laura_gpt_tse_only_clean_output/output/libri2mix/libri2mix/config_log_mel_aux_5s_predict_nq_3"
+output_dir="/public/home/qinxy/bltang/laura_gpt/lauraTSE/sv_output/laura_gpt_tse_only_clean_output_nemo/output/libri2mix/libri2mix/config_log_mel_aux_5s_nemo_sv"
 # model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 
 #######
