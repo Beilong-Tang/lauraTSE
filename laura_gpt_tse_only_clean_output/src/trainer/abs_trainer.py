@@ -95,7 +95,7 @@ class Trainer:
         self.patience_sched = PatienceScheduler(self.optim)
         ## Add the Patience optimizer
         if config.patience is not None:
-            self.patience_epoch = config.get("patience")['epoch']
+            self.patience_epoch = config.patience['epoch']
         else:
             self.patience_epoch = None
 
