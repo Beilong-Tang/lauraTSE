@@ -94,7 +94,7 @@ class Trainer:
 
         self.patience_sched = PatienceScheduler(self.optim)
         ## Add the Patience optimizer
-        if config.get("patience") is not None:
+        if config.patience is not None:
             self.patience_epoch = config.get("patience")['epoch']
         else:
             self.patience_epoch = None
@@ -174,7 +174,9 @@ class Trainer:
         if self.patience_epoch is not None:
             if epoch <= self.patience_epoch:
                 self.scheduler.step()
-        # torch.cuda.empty_cache()
+        else:
+            self.scheduler.step()
+        torch.cuda.empty_cache()
         if if_log:
             stats["lr"] = optim.param_groups[0]["lr"]
             return stats
