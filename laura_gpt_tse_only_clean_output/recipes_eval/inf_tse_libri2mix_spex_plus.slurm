@@ -36,8 +36,8 @@ module load compiler/rocm/dtk-23.10
 ###########
 # Setting #
 ###########
-stage=3
-stop_stage=5 # 0: infer, 1: WER + SPKSIM 2. DNSMOS 3. NISQA 4. SpeechBert 5. WavLM Base Plus SV
+stage=1
+stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS 3. NISQA 4. SpeechBert 5. WavLM Base Plus SV
 
 # 0. libri2mix mixture without norm
 # name="libri2mix"
