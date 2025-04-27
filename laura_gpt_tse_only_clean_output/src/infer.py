@@ -86,18 +86,18 @@ def inference(rank, args):
             mix_wav_path, ref_wav_path = paths
 
             # 0. Mix Mel -> [1, T,]
-            audio, sr = torchaudio.load(mix_wav_path)  # [1,T]
-            mask = torch.tensor([audio.size(1)], dtype=torch.long)
-            mix_mel, _ = mel_spec.mel(audio, mask)
-            mix_mel = mix_mel.to(device)
+            mix_audio, sr = torchaudio.load(mix_wav_path)  # [1,T]
+            # mask = torch.tensor([mix_audio.size(1)], dtype=torch.long)
+            # mix_mel, _ = mel_spec.mel(mix_audio, mask)
+            # mix_mel = mix_mel.to(device)
 
             # 1. Ref Mel -> [1,T,D]
-            audio, sr = torchaudio.load(ref_wav_path)  # [1,T]
+            ref_audio, sr = torchaudio.load(ref_wav_path)  # [1,T]
             if args.max_aux_ds is not None:
-                audio = audio[:, -int(args.max_aux_ds * 16000):]
-            mask = torch.tensor([audio.size(1)], dtype=torch.long)
-            ref_mel, _ = mel_spec.mel(audio, mask)
-            ref_mel = ref_mel.to(device)
+                ref_audio = ref_audio[:, -int(args.max_aux_ds * 16000):]
+            # mask = torch.tensor([ref_audio.size(1)], dtype=torch.long)
+            # ref_mel, _ = mel_spec.mel(ref_audio, mask)
+            # ref_mel = ref_mel.to(device)
             ## Limit the reference mel length
 
             # # 2. Ref Codec ->
@@ -109,7 +109,7 @@ def inference(rank, args):
 
             # 1. Inference
             start = time.time()
-            output = tse(mix_mel, ref_mel)[0]["gen"].squeeze()  # [T]
+            output = tse(mix_audio, ref_audio)[0]["gen"].squeeze()  # [T]
             rtf = (time.time() - start) / (len(output) / sr)
             pbar.set_postfix({"RTF": rtf})
             total_rtf += rtf

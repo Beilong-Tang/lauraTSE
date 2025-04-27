@@ -6,6 +6,7 @@ from funcodec.tasks.text2audio_generation import Text2AudioGenTask
 from funcodec.utils.misc import statistic_model_parameters
 from funcodec.bin.codec_inference import Speech2Token
 from _funcodec import build_model
+from utils.mel_spectrogram import MelSpec
 
 
 class TSExtraction:
@@ -49,17 +50,22 @@ class TSExtraction:
         self.sampling = args.sampling
         self.beam_size = args.beam_size
 
+        # Mel Spectrogram config
+        self.mel_spec = MelSpec(**args.mel_config)
+
     @torch.no_grad()
-    def __call__(self, mix_mel:torch.Tensor, ref_mel:torch.Tensor):
+    def __call__(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor):
         """
         This function can also be used as TSE Inference.
-        mix_mel the mep spec of the mixture: [1, T, D]
-        ref_mel is the reference mel : [1, T, D]
+        mix_audio: the audio of the mixture: [1, T]
+        ref_audio: the audio of the reference mel : [1, T]
         """
         continual = None
         continual_length = None
         # text = torch.cat([ref_mel, mix_mel], dim = 1) # [1,T',D]
         # 1. Encode mix mel and ref mel
+        mix_mel, _ = self.mel_spec.mel(mix_audio, torch.tensor([mix_audio.size(1)], dtype=torch.long))
+        ref_mel, _ = self.mel_spec.mel(ref_audio, torch.tensor([ref_audio.size(1)], dtype=torch.long))
         mix_mel_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
         aux_mel_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
 
