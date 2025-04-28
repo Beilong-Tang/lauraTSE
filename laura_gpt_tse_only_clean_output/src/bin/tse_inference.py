@@ -117,7 +117,7 @@ class TSExtraction:
             decoded_codec,
         )  # {'gen':[1,1,T] }, [1,T,n_q]
     
-    @torch.no_grad
+    @torch.no_grad()
     def produce_trunk(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor):
         """
         mix_audio: the audio of the mixture: [1, T]
