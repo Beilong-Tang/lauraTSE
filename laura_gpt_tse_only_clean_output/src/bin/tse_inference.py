@@ -127,12 +127,16 @@ class TSExtraction:
         split audio into chunks and perform TSE
         """
         trunk_len = int(16000 * self.trunk_ds) # dot length
+        mix_audio_len = mix_audio.size(1)
+        pad_length = math.ceil((mix_audio_len / trunk_len)) * trunk_len
+        mix_audio = torch.nn.functional.pad(mix_audio, (0, pad_length - mix_audio_len))
         res = []
         for i in range(0, mix_audio.size(1), trunk_len):
             audio = mix_audio[:, i:i+trunk_len]
             output = self.produce(audio, ref_audio)
             res.append(output[0]['gen']) # [1,1,T]
         res = torch.cat(res, dim = -1)
+        res = res[:,:,:mix_audio_len]
         return (dict(gen=res), None)
     
 
