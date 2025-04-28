@@ -86,8 +86,6 @@ def inference(rank, args):
     logger.setLevel(logging.INFO)
     # load model
     tse = TSExtraction(args, args.model_ckpt, device, logger)
-    # mel spec
-    mel_spec = MelSpec(**args.mel_config)
 
     # Inference
     total_rtf = 0.0

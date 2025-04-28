@@ -1,5 +1,6 @@
 from torch import nn
 import torch
+import math
 from argparse import Namespace
 from funcodec.torch_utils.load_pretrained_model import load_pretrained_model
 from funcodec.tasks.text2audio_generation import Text2AudioGenTask
@@ -121,18 +122,15 @@ class TSExtraction:
         mix_audio: the audio of the mixture: [1, T]
         ref_audio: the audio of the reference mel : [1, T]
         split audio into chunks and perform TSE
-        trunk overlap is 50%
         """
         trunk_len = 16000 * self.trunk_ds # dot length
-        hop_size = trunk_len % 2
+        res = []
         for i in range(0, mix_audio.size(1), trunk_len):
-            
-            pass
-
-
-
-
-        pass
+            audio = mix_audio[:, i:i+trunk_len]
+            output = self.produce(audio, ref_audio)
+            res.append(output[0]['gen']) # [1,1,T]
+        res = torch.cat(res, dim = -1)
+        return (dict(gen=res), None)
     
 
     @torch.no_grad()
