@@ -41,7 +41,7 @@ infer_mode="trunk"
 
 # 0. libri2mix mixture without norm
 name="libri2mix"
-dataset="libri2mix" # Specify which dataset to infer
+dataset="libri2mix_trunk" # Specify which dataset to infer
 config_name="config_log_mel_aux_5s_finetune_librispeech_epoch_100.yaml"
 
 
