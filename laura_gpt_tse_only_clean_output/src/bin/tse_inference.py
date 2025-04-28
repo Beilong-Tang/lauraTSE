@@ -143,7 +143,7 @@ class TSExtraction:
             res.append(out[0]['gen'])
             ct +=hop
         res = torch.cat(res, dim = -1)
-        return res.squeeze(0)
+        return dict(gen=res.squeeze(0)), None
     
 
     @torch.no_grad()
