@@ -125,6 +125,7 @@ def inference(rank, args):
                 output = tse(mix_audio, ref_audio)[0]["gen"].squeeze()  # [T]
             except:
                 logger.info(f"Audio {mix_wav_path} cannot be generated.")
+                continue
             rtf = (time.time() - start) / (len(output) / sr)
             pbar.set_postfix({"RTF": rtf})
             total_rtf += rtf
