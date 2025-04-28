@@ -132,7 +132,7 @@ def inference(rank, args):
 
             sf.write(
                 save_path,
-                normalize(output.cpu().numpy(), ref_audio.numpy().squeeze()),
+                normalize(output.cpu().numpy(), ref_audio.cpu().numpy().squeeze()),
                 samplerate=sr,
             )
     logger.info(
