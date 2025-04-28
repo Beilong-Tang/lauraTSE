@@ -71,6 +71,7 @@ wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16
 ###############
 config_path=exp/$name/$config_name
 output_dir="output/$name/$dataset/$(basename $config_name .yaml)"
+mkdir -p $output_dir
 output_dir=$(realpath $output_dir) # Add Change it to absolute path, as NISQA changes the directory
 model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 
