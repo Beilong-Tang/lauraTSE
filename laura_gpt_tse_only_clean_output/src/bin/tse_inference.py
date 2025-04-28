@@ -8,6 +8,7 @@ from funcodec.utils.misc import statistic_model_parameters
 from funcodec.bin.codec_inference import Speech2Token
 from _funcodec import build_model
 from utils.mel_spectrogram import MelSpec
+print("TSE EXTRACTION CLASS")
 
 
 class TSExtraction:
