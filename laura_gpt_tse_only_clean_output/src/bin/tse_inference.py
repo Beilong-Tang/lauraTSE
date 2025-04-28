@@ -57,10 +57,10 @@ class TSExtraction:
 
         # inference type
         self.infer_type = args.infer
-        assert self.infer_type in ['offline', 'trunk', 'one']
+        assert self.infer_type in ['offline', 'trunk']
         print("Inference type: ", self.infer_type)
         if self.infer_type == 'trunk':
-            self.trunk_ds = args.trunk_ds
+            self.hop_ds = args.hop_ds
             pass
 
     @torch.no_grad()
@@ -121,9 +121,9 @@ class TSExtraction:
         )  # {'gen':[1,1,T] }, [1,T,n_q]
     
     @torch.no_grad()
-    def infer_one(self, mix_wav, ref_wav):
+    def produce_trunk(self, mix_wav, ref_wav):
 
-        hop = int(self.trunk_ds*16000)
+        hop = int(self.hop_ds*16000)
         # mix_wav = mix_wav[:mix_wav.size(1) // hop]
         continual = None #[T,Nq]
         ct = hop
