@@ -101,6 +101,7 @@ class TSExtraction:
         # _, _, gen_speech_only_lm, _ = self.codec_model(
         #     decoded_codec[:, continual_length:], bit_width=None, run_mod="decode"
         # )
+        # print(f"decodec codec: {decod}")
         # 3. predict embeddings
         gen_speech = self.model.syn_audio(
             decoded_codec,
