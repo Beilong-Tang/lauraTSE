@@ -97,6 +97,7 @@ def inference(rank, args):
 
             # 0. Mix Mel -> [1, T,]
             mix_audio, sr = torchaudio.load(mix_wav_path)  # [1,T]
+            mix_audio = mix_audio.to(device)
             # mask = torch.tensor([mix_audio.size(1)], dtype=torch.long)
             # mix_mel, _ = mel_spec.mel(mix_audio, mask)
             # mix_mel = mix_mel.to(device)
@@ -105,6 +106,7 @@ def inference(rank, args):
             ref_audio, sr = torchaudio.load(ref_wav_path)  # [1,T]
             if args.max_aux_ds is not None:
                 ref_audio = ref_audio[:, -int(args.max_aux_ds * 16000):]
+            ref_audio = ref_audio.to(device)
             # mask = torch.tensor([ref_audio.size(1)], dtype=torch.long)
             # ref_mel, _ = mel_spec.mel(ref_audio, mask)
             # ref_mel = ref_mel.to(device)

@@ -77,7 +77,9 @@ class TSExtraction:
         # text = torch.cat([ref_mel, mix_mel], dim = 1) # [1,T',D]
         # 1. Encode mix mel and ref mel
         mix_mel, _ = self.mel_spec.mel(mix_audio, torch.tensor([mix_audio.size(1)], dtype=torch.long))
+        mix_mel = mix_mel.to(mix_audio.device)
         ref_mel, _ = self.mel_spec.mel(ref_audio, torch.tensor([ref_audio.size(1)], dtype=torch.long))
+        ref_mel = ref_mel.to(mix_audio.device)
         mix_mel_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
         aux_mel_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
 
