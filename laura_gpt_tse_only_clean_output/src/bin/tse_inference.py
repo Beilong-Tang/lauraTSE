@@ -121,24 +121,29 @@ class TSExtraction:
         )  # {'gen':[1,1,T] }, [1,T,n_q]
     
     @torch.no_grad()
-    def produce_trunk(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor):
-        """
-        mix_audio: the audio of the mixture: [1, T]
-        ref_audio: the audio of the reference mel : [1, T]
-        split audio into chunks and perform TSE
-        """
-        trunk_len = int(16000 * self.trunk_ds) # dot length
-        mix_audio_len = mix_audio.size(1)
-        pad_length = math.ceil((mix_audio_len / trunk_len)) * trunk_len
-        mix_audio = torch.nn.functional.pad(mix_audio, (0, pad_length - mix_audio_len))
+    def infer_one(self, mix_wav, ref_wav):
+
+        hop = int(self.trunk_ds*16000)
+        # mix_wav = mix_wav[:mix_wav.size(1) // hop]
+        continual = None #[T,Nq]
+        ct = hop
         res = []
-        for i in range(0, mix_audio.size(1), trunk_len):
-            audio = mix_audio[:, i:i+trunk_len]
-            output = self.produce(audio, ref_audio)
-            res.append(output[0]['gen']) # [1,1,T]
+        # res = [first[0]['gen']]
+        while ct <= mix_wav.size(1):
+            audio = mix_wav[:, :ct+hop]
+            if audio.size(1) < hop:
+                try:
+                    out = self.produce(audio, ref_wav, continual = continual)
+                except:
+                    print(f"Last frame with length {audio.size(1)} is not generated.")
+                    break
+            else:
+                out = self.produce(audio, ref_wav, continual = continual)
+            continual = out[1].squeeze(0).tolist()
+            res.append(out[0]['gen'])
+            ct +=hop
         res = torch.cat(res, dim = -1)
-        res = res[:,:,:mix_audio_len]
-        return (dict(gen=res), None)
+        return res.squeeze(0)
     
 
     @torch.no_grad()

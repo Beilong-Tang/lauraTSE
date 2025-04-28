@@ -40,14 +40,14 @@ def parse_args():
     )
     ## Inference methods:
     ## DDP
-    parser.add_argument("-i", "--infer", choices=['offline', 'trunk', 'one'], default='offline', help= 
+    parser.add_argument("-i", "--infer", choices=['offline', 'causal',], default='offline', help= 
                         """ 
                         Inference methods type
                         offline: Infer the whole audio at the same time
                         trunk: splits the audio into multiple trunks with overlap 50\\%, and inference from there
                         one: Output one frame of raw audio form at a time.
                         """)
-    parser.add_argument("--trunk_ds", type=int, default=4, help="Only useful when infer type is trunk. Trunk Size: default: 4 seconds")
+    parser.add_argument("--hop_ds", type=int, default=2, help="Only useful when infer type is trunk. Trunk Size: default: 4 seconds")
     args = parser.parse_args()
     return args
 
