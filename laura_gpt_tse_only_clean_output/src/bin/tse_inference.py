@@ -123,7 +123,7 @@ class TSExtraction:
         ref_audio: the audio of the reference mel : [1, T]
         split audio into chunks and perform TSE
         """
-        trunk_len = 16000 * self.trunk_ds # dot length
+        trunk_len = int(16000 * self.trunk_ds) # dot length
         res = []
         for i in range(0, mix_audio.size(1), trunk_len):
             audio = mix_audio[:, i:i+trunk_len]
