@@ -163,7 +163,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
                 Args:
                     text: (Batch, Length, Dim)
                     text_lengths: (Batch,)
-                    codec: (Batch, Length)
+                    codec: (Batch, Length, Nq)
                     codec_lengths: (Batch,)
                     need_targets: bool, whether provide targets
                 """
@@ -494,7 +494,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             max_length: int = 30 * 25,
             sampling: Union[bool, int, float] = True,
             beam_size: int = 1,
-            continual: List = None,
+            continual: List = None, # [T, Nq]
     ) -> torch.Tensor:
         device = text.device
         out_tokens = [] if continual is None else deepcopy(continual)
@@ -550,7 +550,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             self.codebook_size
         ).float()
         codec_lengths = torch.tensor([codec.shape[1]], dtype=torch.int64, device=text.device)
-        codec_emb, codec_emb_lens = self.cal_codec_emb(text, text_lengths, prob, codec_lengths)
+        codec_emb, codec_emb_lens = self.cal_codec_emb(text, text_lengths, prob, codec_lengths) # [1,T,D]
         _, _, recon_wav, _ = codec_model(codec_emb[:, continual_length:], run_mod="decode_emb")
 
         return recon_wav

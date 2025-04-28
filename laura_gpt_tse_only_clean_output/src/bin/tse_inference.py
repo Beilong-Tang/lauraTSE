@@ -53,15 +53,25 @@ class TSExtraction:
         # Mel Spectrogram config
         self.mel_spec = MelSpec(**args.mel_config)
 
+        # inference type
+        self.infer_type = args.infer
+        assert self.infer_type in ['offline', 'trunk', 'one']
+        print("Inference type: ", self.infer_type)
+        if self.infer_type == 'trunk':
+            self.trunk_ds = args.trunk_ds
+            pass
+
     @torch.no_grad()
-    def __call__(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor):
+    def produce(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor, continual:list = None):
         """
         This function can also be used as TSE Inference.
         mix_audio: the audio of the mixture: [1, T]
         ref_audio: the audio of the reference mel : [1, T]
+        continual: List [T,n_q] or None. 
+        Returns: enhanced audio : [1,T]
         """
-        continual = None
-        continual_length = None
+
+        continual_length = None if continual is None else len(continual)
         # text = torch.cat([ref_mel, mix_mel], dim = 1) # [1,T',D]
         # 1. Encode mix mel and ref mel
         mix_mel, _ = self.mel_spec.mel(mix_audio, torch.tensor([mix_audio.size(1)], dtype=torch.long))
@@ -83,7 +93,7 @@ class TSExtraction:
             sampling=self.sampling,
             beam_size=self.beam_size,
             continual=continual,
-        )
+        ) # [1,T,n_q]
         # _, _, gen_speech_only_lm, _ = self.codec_model(
         #     decoded_codec[:, continual_length:], bit_width=None, run_mod="decode"
         # )
@@ -104,4 +114,34 @@ class TSExtraction:
             ret_val,
             decoded_codec,
         )  # {'gen':[1,1,T] }, [1,T,n_q]
+    
+    @torch.no_grad
+    def produce_trunk(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor):
+        """
+        mix_audio: the audio of the mixture: [1, T]
+        ref_audio: the audio of the reference mel : [1, T]
+        split audio into chunks and perform TSE
+        trunk overlap is 50%
+        """
+        trunk_len = 16000 * self.trunk_ds # dot length
+        hop_size = trunk_len % 2
+        for i in range(0, mix_audio.size(1), trunk_len):
+            
+            pass
+
+
+
+
+        pass
+    
+
+    @torch.no_grad()
+    def __call__(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor):
+        if self.infer_type == "offline":
+            return self.produce(mix_audio, ref_audio)
+        elif self.infer_type == "trunk":
+            return self.produce_trunk(mix_audio, ref_audio)
+            
+            pass
+        pass
 
