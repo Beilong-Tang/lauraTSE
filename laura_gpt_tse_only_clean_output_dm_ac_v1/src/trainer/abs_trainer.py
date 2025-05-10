@@ -106,6 +106,7 @@ class Trainer:
 
         if resume != "":
             ## loading ckpt
+            print(resume)
             self._log(f"loading model from {resume}...")
             ckpt = torch.load(resume, map_location="cpu", weights_only=False)
             self.model.module.load_state_dict(ckpt["model_state_dict"])
