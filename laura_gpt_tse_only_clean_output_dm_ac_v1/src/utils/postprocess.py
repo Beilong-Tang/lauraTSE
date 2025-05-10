@@ -8,9 +8,6 @@ class MaxLength():
     def __init__(self, field_list:list, max_len: 1000):
         """
         Data class to make sure that each data is under the maximum length 
-        Arguments:
-            random_clip: bool. Whether the required length cut is randomly clipped. If True, then the output will be 
-                randomly clipped. Otherwise, the first max_len will be chosen. 
         """
         self.field_list = field_list
         self.max_len = max_len
