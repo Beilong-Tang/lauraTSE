@@ -42,7 +42,7 @@ valid_data_path_and_name_and_type: [
         "npy"
     ]
 ]
-ref_ds: [5, 10]
+ref_ds: [5, 10] # ds for the reference speech
 
 grad_clip: 5
 seed: 1234
