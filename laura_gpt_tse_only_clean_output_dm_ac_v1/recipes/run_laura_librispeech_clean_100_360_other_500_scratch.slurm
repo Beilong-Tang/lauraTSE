@@ -57,7 +57,7 @@ master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 export MASTER_ADDR=$master_addr
 echo "MASTER_ADDR="$MASTER_ADDR
 
-srun python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume
+srun python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume --fine_tune ""
 ###############
 ## Run  DDP  ##
 ###############
