@@ -426,7 +426,7 @@ class DMESPnetDataset(ESPnetDataset):
     """
     def __init__(
         self,
-        path_name_type_list: Collection[Tuple[str, str, str]],
+        path_name_type_list: Collection[Tuple[Union[str, list], str, str]],
         preprocess: Callable[
             [str, Dict[str, np.ndarray]], Dict[str, np.ndarray]
         ] = None,
@@ -478,7 +478,7 @@ class DMESPnetDataset(ESPnetDataset):
             self.cache = None
 
     def _build_loader(
-        self, path: str, loader_type: str
+        self, path: Union[str, list], loader_type: str
     ) -> Mapping[str, Union[np.ndarray, torch.Tensor, str, numbers.Number]]:
         """Helper function to instantiate Loader.
 
