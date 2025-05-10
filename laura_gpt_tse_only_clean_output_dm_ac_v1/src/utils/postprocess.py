@@ -16,6 +16,7 @@ class MaxLength():
         self.field_list = field_list
         self.max_len = max_len
         self.random_clip = random_clip
+        print(f"MaxLength class: random clip is {random_clip}")
         pass 
 
     def __call__(self, data:dict):
