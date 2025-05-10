@@ -141,7 +141,7 @@ max_aux_ds: 5
 optim:
     type: Adam
     args:
-        lr: 1.0e-4
+        lr: 1.0e-3
 
 scheduler: warmuplr
 scheduler_conf:
