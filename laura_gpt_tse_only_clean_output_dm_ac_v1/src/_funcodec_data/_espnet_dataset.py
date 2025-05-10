@@ -33,8 +33,7 @@ from typing import Union
 
 import yaml
 
-from utils.audio import read_audio
-from utils.utils import AttrDict
+
 # from dataset.augmentation import generate_from_config, generate_augmentations_config
 
 from utils.hinter import hint_once
@@ -204,10 +203,10 @@ class DmMixSpkReader:
         intf_audio = intf_audio * 10 ** (-_snr / 20)
         mix = clean_audio + intf_audio
         return self.mel_proc.mel_one_np(mix)
-    
 
+        
 class DmRefReader:
-    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, ref_ds = 5):
+    def __init__(self, clean_path, spk_dict_path:str, mel_config:dict, ref_ds:Union[int, tuple]):
         with open(spk_dict_path, "rb") as f:
             self.spk_dict = pickle.load(f)
         self.clean_scp = read_2column_text(clean_path)
@@ -220,6 +219,27 @@ class DmRefReader:
     def __iter__(self):
         return iter(self.clean_scp)
 
+
+    def _clip_wav(self, wav:np.ndarray, ds: Union[int, list], sr):
+        def _random_select_wav(wav:np.ndarray, length):
+            offset = random.randint(0, len(wav) - length - 1)
+            return wav[offset: offset + length]
+        if isinstance(ds, int):
+            if len(wav) <= int(ds * sr):
+                return wav
+            else:
+                return _random_select_wav(wav, int(ds * sr))
+        elif isinstance(ds, list):
+            lower = int(ds[0] * sr)
+            upper = int(ds[-1] * sr)
+            if len(wav) <= lower:
+                return wav
+            elif len(wav) <= upper:
+                length = random.randint(lower, len(wav)-1)
+                return _random_select_wav(wav, length)
+            else:
+                return _random_select_wav(wav, upper)
+
     def __getitem__(self, uid):
         spk = uid.split("-")[0]
 
@@ -227,8 +247,10 @@ class DmRefReader:
         while Path(ref_path).stem == uid:
             ref_path = random.choice(self.spk_dict[spk])
         
-        ref_speech, sr = librosa.load(ref_path, sr = None)
-        ref_speech = ref_speech[-int(self.ds * sr):]
+        ref_speech, sr = librosa.load(ref_path, sr = None) # [T]
+
+        ref_speech = self._clip_wav(ref_speech, self.ds, sr)
+        
         ref_speech = normalize(ref_speech)
         return self.mel_proc.mel_one_np(ref_speech)
 
@@ -411,7 +433,7 @@ class DMESPnetDataset(ESPnetDataset):
         max_cache_fd: int = 0,
         spk_dict_path:str = None, ## Note that this cannot be None
         mel_config: dict = None,
-        ref_ds = 5
+        ref_ds: Union[list, int] = 5 # This can be either an int or a list representing the range of the reference speech.
     ):
         assert spk_dict_path is not None
         self.mel_config = mel_config
