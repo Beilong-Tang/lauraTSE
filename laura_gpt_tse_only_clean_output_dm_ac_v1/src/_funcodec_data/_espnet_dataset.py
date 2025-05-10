@@ -13,6 +13,8 @@ import h5py
 import kaldiio
 import numpy as np
 import torch
+import copy
+import humanfriendly
 from typeguard import check_argument_types
 
 from funcodec.fileio.npy_scp import NpyScpReader
@@ -23,6 +25,7 @@ from funcodec.fileio.read_text import read_2column_text
 from funcodec.fileio.sound_scp import SoundScpReader
 from funcodec.fileio.read_text import read_2column_text
 from funcodec.datasets.dataset import ESPnetDataset
+from funcodec.utils.sized_dict import SizedDict
 from typing import Any
 from typing import Callable
 from typing import Collection
@@ -439,9 +442,40 @@ class DMESPnetDataset(ESPnetDataset):
         self.mel_config = mel_config
         self.spk_dict_path = spk_dict_path
         self.ref_ds = ref_ds
-        super().__init__(path_name_type_list, preprocess, float_dtype, int_dtype, max_cache_size, max_cache_fd)
-        
-    
+
+
+        if len(path_name_type_list) == 0:
+            raise ValueError(
+                '1 or more elements are required for "path_name_type_list"'
+            )
+
+        path_name_type_list = copy.deepcopy(path_name_type_list)
+        self.preprocess = preprocess
+
+        self.float_dtype = float_dtype
+        self.int_dtype = int_dtype
+        self.max_cache_fd = max_cache_fd
+
+        self.loader_dict = {}
+        self.debug_info = {}
+        for path, name, _type in path_name_type_list:
+            if name in self.loader_dict:
+                raise RuntimeError(f'"{name}" is duplicated for data-key')
+            loader = self._build_loader(path, _type)
+            self.loader_dict[name] = loader
+            self.debug_info[name] = path, _type
+            if len(self.loader_dict[name]) == 0:
+                raise RuntimeError(f"{path} has no samples")
+
+            # TODO(kamo): Should check consistency of each utt-keys?
+
+        if isinstance(max_cache_size, str):
+            max_cache_size = humanfriendly.parse_size(max_cache_size)
+        self.max_cache_size = max_cache_size
+        if max_cache_size > 0:
+            self.cache = SizedDict(shared=True)
+        else:
+            self.cache = None
 
     def _build_loader(
         self, path: str, loader_type: str
