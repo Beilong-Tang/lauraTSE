@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -J run_laura_libspeech_clean_100_360_other_500_scratch
+#SBATCH -J run_laura_librispeech_clean_100_360_other_500_scratch
 #SBATCH -N 4
-#SBATCH -o log/run_laura_libspeech_clean_100_360_other_500_scratch.out
-#SBATCH -e log/run_laura_libspeech_clean_100_360_other_500_scratch.err
+#SBATCH -o log/run_laura_librispeech_clean_100_360_other_500_scratch.out
+#SBATCH -e log/run_laura_librispeech_clean_100_360_other_500_scratch.err
 #SBATCH -p kshdnormal02
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
@@ -27,7 +27,7 @@ module load compiler/rocm/dtk-23.10
 # Setting #
 ###########
 
-name="libspeech_clean_100_360_other_500_scratch"
+name="librispeech_clean_100_360_other_500_scratch"
 config_path=exp/$name/config_log_mel_aux_5s.yaml
 resume=""
 
