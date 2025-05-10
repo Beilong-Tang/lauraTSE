@@ -29,6 +29,7 @@ module load compiler/rocm/dtk-23.10
 
 name="librispeech_other_500_on_libspeech_clean_100_360"
 config_path=exp/$name/config_log_mel_aux_5s.yaml
+fine_tune="/public/home/qinxy/bltang/laura_gpt/lauraTSE/laura_gpt_tse_only_clean_output/ckpt/libri2mix/config_log_mel_aux_5s_finetune_librispeech_epoch_100/best.pth"
 resume=""
 
 ###############
@@ -57,7 +58,8 @@ master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 export MASTER_ADDR=$master_addr
 echo "MASTER_ADDR="$MASTER_ADDR
 
-srun python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume
+srun python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume \
+    --fine_tune $fine_tune
 ###############
 ## Run  DDP  ##
 ###############
