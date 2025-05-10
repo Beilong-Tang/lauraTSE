@@ -4,26 +4,26 @@ init_param: ["/public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_e
 codec_model_file: /public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth
 codec_config_file: /public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/config.yaml
 
-train_shape_file: ["/public/home/qinxy/bltang/data/librispeech/funcodec/data/train/all_shape.scp"]
+train_shape_file: ["/public/home/qinxy/bltang/data/librispeech/funcodec/data_clean_100_360_other_500/all_shape.scp"]
 valid_shape_file: ["/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/dev/all_shape.scp"]
 train_data_path_and_name_and_type: [
     [
-        "/public/home/qinxy/bltang/data/librispeech/clean.scp",
+        "/public/home/qinxy/bltang/data/librispeech/clean_100_360_other_500.scp",
         "text",
         "dm_libri_mix"
     ],
     [
-        "/public/home/qinxy/bltang/data/librispeech/clean.scp",
+        "/public/home/qinxy/bltang/data/librispeech/clean_100_360_other_500.scp",
         "aux",
         "dm_libri_ref"
     ],
     [
-        "/public/home/qinxy/bltang/data/librispeech/funcodec/data/train/all.scp",
+        "/public/home/qinxy/bltang/data/librispeech/funcodec/data_clean_100_360_other_500/all.scp",
         "codec",
         "npy"
     ]
 ]
-spk_dict_path: /public/home/qinxy/bltang/data/librispeech/train_clean_100_360.pkl
+spk_dict_path: /public/home/qinxy/bltang/data/librispeech/train_clean_100_360_other_500_ac.pkl
 max_mix_ds: 20
 valid_data_path_and_name_and_type: [
      [

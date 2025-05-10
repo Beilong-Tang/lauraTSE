@@ -14,4 +14,4 @@ SOS ref EMB mix SOS clean SOS
 
 
 ## TODO:
-- add `fine_tune` to the config
+- [] add `fine_tune` to the config
