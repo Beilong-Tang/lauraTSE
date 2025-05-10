@@ -137,8 +137,8 @@ if __name__ == "__main__":
     parser.add_argument("--log", required=True, type=str, help="Output of the log")
     parser.add_argument("--config", type=str, default=None, help="path to yaml config")
     parser.add_argument("--ckpt_path", type=str, required=True)
-    parser.add_argument("--resume", type=str, nargs="?", default="")
-    parser.add_argument("--fine_tune", type=str, nargs="?", default="") ## Determines if we finetue or not. 
+    parser.add_argument("--resume", type=str,  default="")
+    parser.add_argument("--fine_tune", type=str,  default="") ## Determines if we finetue or not. 
     ##############
     # DDP Config #
     ##############
