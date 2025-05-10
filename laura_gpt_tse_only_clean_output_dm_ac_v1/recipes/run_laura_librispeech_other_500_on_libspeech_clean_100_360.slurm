@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -J run_tse_librispeech_log_mel_config_aux_5s_only_clean
+#SBATCH -J run_laura_librispeech_other_500_on_libspeech_clean_100_360
 #SBATCH -N 4
-#SBATCH -o log/run_tse_librispeech_log_mel_config_aux_5s_only_clean.out
-#SBATCH -e log/run_tse_librispeech_log_mel_config_aux_5s_only_clean.err
+#SBATCH -o log/run_laura_librispeech_other_500_on_libspeech_clean_100_360.out
+#SBATCH -e log/run_laura_librispeech_other_500_on_libspeech_clean_100_360.err
 #SBATCH -p kshdnormal02
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
@@ -27,9 +27,9 @@ module load compiler/rocm/dtk-23.10
 # Setting #
 ###########
 
-name="librispeech"
+name="librispeech_other_500_on_libspeech_clean_100_360"
 config_path=exp/$name/config_log_mel_aux_5s.yaml
-resume="ckpt/librispeech/config_log_mel_aux_5s_sv_e_37/epoch37.pth"
+resume=""
 
 ###############
 # DONT CHANGE #
