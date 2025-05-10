@@ -1,16 +1,21 @@
 
 from funcodec.modules.nets_utils import pad_list
 import torch
+import random
 
 class MaxLength():
 
 
-    def __init__(self, field_list:list, max_len: 1000):
+    def __init__(self, field_list:list, max_len: 1000, random_clip = True):
         """
         Data class to make sure that each data is under the maximum length 
+        Arguments:
+            random_clip: bool. Whether the required length cut is randomly clipped. If True, then the output will be 
+                randomly clipped. Otherwise, the first max_len will be chosen. 
         """
         self.field_list = field_list
         self.max_len = max_len
+        self.random_clip = random_clip
         pass 
 
     def __call__(self, data:dict):
@@ -35,7 +40,11 @@ class MaxLength():
                 for item, item_len in zip(batch, batch_lens): # [T,*]
                     item = item[:item_len.item()]
                     ## Apply maximum here
-                    item = item[:self.max_len]
+                    if self.random_clip is False:
+                        item = item[:self.max_len]
+                    else:
+                        offset = random.randint(0, len(item) - self.max_len - 1)
+                        item = item[offset: offset + self.max_len]
                     res.append(item)
                     res_len.append(item.size(0))
                 res = pad_list(res, 0.0)
