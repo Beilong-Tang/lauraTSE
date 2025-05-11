@@ -66,7 +66,7 @@ wer_reference="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/Libri2Mix/wav16
 
 ##### WavLM output output dir
 
-output_dir=/public/home/qinxy/bltang/laura_gpt/lauraTSE/sv_output/tse_tsd/output/libri2mix_clean
+output_dir=/public/home/qinxy/bltang/laura_gpt/lauraTSE/sv_output/tse_tsd/output/librimix_all/libri2mix_clean
 
 # model_ckpt=ckpt/$name/$(basename "$config_path" .yaml)/best.pth
 
