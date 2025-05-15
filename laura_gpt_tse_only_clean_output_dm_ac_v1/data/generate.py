@@ -34,7 +34,7 @@ def read_2column_text(path: Union[Path, str]) -> Dict[str, str]:
             data[k] = v
     return data
 
-def main(scp_list_config: str, spk_scp_dict:Dict[str,str],output_dir:str):
+def main(scp_list_config: str,output_dir:str):
     """
     Arguments:
         scp_list_config: path to yaml spk list. It should contain a `data` field where each field in `data` contains `clean`, `codec`, and `shape` 
@@ -66,7 +66,7 @@ def main(scp_list_config: str, spk_scp_dict:Dict[str,str],output_dir:str):
 
         for _utt_id in _clean_scp_dict.keys():
             _utt_id_new = f"{_name}{_utt_id}"
-            _spk_id = f"{_name}{_utt_id.split("-")[0]}"
+            _spk_id = f"{_name}{_utt_id.split('-')[0]}"
             res_clean.append(f"{_utt_id_new} {_clean_scp_dict[_utt_id]}\n")
             res_codec.append(f"{_utt_id_new} {_codec_scp_dict[_utt_id]}\n")
             res_shape.append(f"{_utt_id_new} {_shape_scp_dict[_utt_id]}\n")

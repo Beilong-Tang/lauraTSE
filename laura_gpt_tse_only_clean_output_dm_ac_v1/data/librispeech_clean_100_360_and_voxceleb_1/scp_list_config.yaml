@@ -1,11 +1,11 @@
 # The config for each speech
 
 data: # The data to combine
-  - librispeech: 
-    - clean: 
-    - codec: 
-    - shape: 
-  - voxceleb_1:
-    - clean: 
-    - codec: 
-    - shape: 
+  librispeech: 
+    clean: /DKUdata/tangbl/data/librispeech/clean.scp
+    codec: /DKUdata/tangbl/data/librispeech/funcodec/data/train/all.scp
+    shape: /DKUdata/tangbl/data/librispeech/funcodec/data/train/all_shape.scp
+  voxceleb_1:
+    clean: /DKUdata/tangbl/data/voxceleb_1/all/wavs.scp
+    codec: /DKUdata/tangbl/data/voxceleb_1/all/funcodec/all/all.scp
+    shape: /DKUdata/tangbl/data/voxceleb_1/all/funcodec/all/all_shape.scp
