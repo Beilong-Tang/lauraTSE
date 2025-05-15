@@ -1,0 +1,11 @@
+# The config for each speech
+
+data: # The data to combine
+  - librispeech: 
+    - clean: 
+    - codec: 
+    - shape: 
+  - voxceleb_1:
+    - clean: 
+    - codec: 
+    - shape: 

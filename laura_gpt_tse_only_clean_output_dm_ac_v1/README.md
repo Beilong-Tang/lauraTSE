@@ -12,5 +12,8 @@ SOS ref EMB mix SOS clean SOS
     - length can be controlled within a range. I set it 5-10 seconds. 
     - any part of the speech can work rather than just the last 5 seconds.
 
+- data dynamic mixing
+    - Add scripts to combine data
+
 ## TODO:
 - [x] add `fine_tune` to the recipes sh
