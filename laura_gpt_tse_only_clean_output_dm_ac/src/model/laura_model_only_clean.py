@@ -371,7 +371,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             text_lengths: (B,)
             aux: (B, L, D) ## The referene Mel
             aux_lengths: (B,)
-            codec: (B, T, N) ## The clean
+            codec: (B, T, N) ## The clean codec
             codec_lengths: (B,) ## Clean length
         """
         text = text[:, :text_lengths.max()]
