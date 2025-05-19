@@ -33,7 +33,7 @@ module load compiler/rocm/dtk-23.10
 ###########
 # Setting #
 ###########
-stage=0
+stage=3
 stop_stage=5 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 
