@@ -401,6 +401,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
         llm_lengths = torch.tensor(llm_lengths, dtype = torch.long, device = text.device)
         
         ## Assign it to text
+
         text = llm_inputs
         text_lengths = llm_lengths
         text = text[:, :text_lengths.max()]
@@ -421,7 +422,8 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             codec[:, :, :self.predict_nq], # [B, T, n_q]
             codec_lengths
         ) # [B, T, n_q, 1024]
-        codec_emb, codec_emb_lens = self.cal_codec_emb(text, text_lengths, prob, codec_lengths)
+
+        codec_emb, codec_emb_lens = self.cal_codec_emb(aux, aux_lengths, prob, codec_lengths)
 
         # 4. loss calculation
         target_emb = self.calc_dense_vector(codec, codec_lengths)
