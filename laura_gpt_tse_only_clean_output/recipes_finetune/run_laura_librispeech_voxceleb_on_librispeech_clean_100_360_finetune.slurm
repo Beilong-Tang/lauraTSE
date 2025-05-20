@@ -27,8 +27,7 @@ module load compiler/rocm/dtk-23.10
 # Setting #
 ###########
 
-name="voxceleb_on_librispeech_clean_100_360"
-config_path=exp/$name/finetune_libri2mix_clean_config_log_mel_aux_5s.yaml
+config_path=finetune/libri2mix_clean/voxceleb_on_librispeech_clean_100_360/finetune_libri2mix_clean_config_log_mel_aux_5s.yaml
 fine_tune="/public/home/qinxy/bltang/laura_gpt/lauraTSE/laura_gpt_tse_only_clean_output_dm_ac_v1/ckpt/voxceleb_on_librispeech_clean_100_360/config_log_mel_aux_5s/best.pth"
 resume=""
 
