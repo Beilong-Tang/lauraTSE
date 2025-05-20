@@ -13,7 +13,7 @@
 # export NCCL_IB_HCA=mlx5_0
 # export NCCL_SOCKET_IFNAME=ib0
 
-# # export ROCBLAS_TENSILE_LIBPATH=/public/software/compiler/rocm/dtk-23.10/lib/rocblas/library_dcu2
+# # export ROCBLAS_TENSILE_LIBPATH=/public/software/compiler/rocm/dtk-24.04/lib/rocblas/library_dcu2
 # source /public/software/apps/DeepLearning/whl/env.sh
 # source ~/anaconda3/etc/profile.d/conda.sh
 # conda activate urgent2025 # using urgent2025 environment
@@ -61,4 +61,4 @@ mkdir -p $log_path
 ## Run  DDP  ##
 ###############
 export CUDA_VISIBLE_DEVICES="4,5,6,7"
-python -u train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume --fine_tune ""
+python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume --fine_tune ""
