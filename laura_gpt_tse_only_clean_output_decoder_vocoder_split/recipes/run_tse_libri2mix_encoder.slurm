@@ -3,17 +3,17 @@
 #SBATCH -N 4
 #SBATCH -o log/run_tse_libri2mix_encoder.out
 #SBATCH -e log/run_tse_libri2mix_encoder.err
-#SBATCH -p kshdnormal
+#SBATCH -p kshdnormal02
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=dcu:4
 
-export MIOPEN_FIND_MODE=3
-export HSA_FORCE_FINE_GRAIN_PRICE=1
-export NCCL_IB_HCA=mlx5_0
-export NCCL_SOCKET_IFNAME=ib0
+# export MIOPEN_FIND_MODE=3
+# export HSA_FORCE_FINE_GRAIN_PRICE=1
+# export NCCL_IB_HCA=mlx5_0
+# export NCCL_SOCKET_IFNAME=ib0
 
-export ROCBLAS_TENSILE_LIBPATH=/public/software/compiler/rocm/dtk-24.04/lib/rocblas/library_dcu2
+# export ROCBLAS_TENSILE_LIBPATH=/public/software/compiler/rocm/dtk-24.04/lib/rocblas/library_dcu2
 source /public/software/apps/DeepLearning/whl/env.sh
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate urgent2025 # using urgent2025 environment
