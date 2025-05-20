@@ -28,7 +28,7 @@
 ###########
 
 name="libri2mix"
-config_path=exp/$name/config_log_mel_aux_5s_encoder.yaml
+config_path=exp/$name/config_log_mel_aux_5s_encoder_sv.yaml
 resume=""
 
 ###############
