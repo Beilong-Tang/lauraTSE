@@ -1,13 +1,10 @@
-## 
-## Same as the config_log_mel_aux_5s.yaml. This is just to make a new config and experiment for
-## the finetune on epoch 100
-##
+# Voxceleb all (300hrs) + Librispeech-100-360 (460hrs) = 760hrs
 
-init_param: ["/DKUdata/tangbl/FunCodec/egs/LibriTTS/codec/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth:quantizer.rq.model:quantizer_codebook"]
+init_param: ["/public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth:quantizer.rq.model:quantizer_codebook"]
 
 # For inference need
-codec_model_file: /DKUdata/tangbl/FunCodec/egs/LibriTTS/codec/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth
-codec_config_file: /DKUdata/tangbl/FunCodec/egs/LibriTTS/codec/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/config.yaml
+codec_model_file: /public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/model.pth
+codec_config_file: /public/home/qinxy/bltang/LLM_TTS/egs/exp/audio_codec-encodec-zh_en-general-16k-nq32ds640-pytorch/config.yaml
 
 train_shape_file: ["/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/train/all_shape.scp"]
 valid_shape_file: ["/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/libri2mix_tse_data_funcodec/s1/dev/all_shape.scp"]
@@ -45,6 +42,7 @@ valid_data_path_and_name_and_type: [
         "npy"
     ]
 ]
+
 
 grad_clip: 5
 seed: 1234
@@ -119,7 +117,7 @@ model_conf:
 
 ### Training related
 batch_type: length
-batch_bins: 15360 # increase the batch_bins a bit
+batch_bins: 15360
 batch_size: 40 # This does not matter here
 sort_in_batch: descending
 sort_batch: descending
@@ -155,6 +153,10 @@ best_save_type: descend
 max_ckpt: 1
 log_interval: 10
 epoch: 50
+
+## patience scheduler
+patience:
+    epoch: 20 # the epoch to start patience scheduler
 
 # training process
 # num_iters_per_epoch: 10000
