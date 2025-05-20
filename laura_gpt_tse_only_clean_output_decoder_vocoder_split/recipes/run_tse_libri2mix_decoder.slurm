@@ -61,4 +61,4 @@ srun python -u src/train.py --config $config_path --log $log_path --ckpt_path $c
 ## Run  DDP  ##
 ###############
 # export CUDA_VISIBLE_DEVICES="0,1,2,3"
-# python -u train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume --fine_tune ""
+# python -u src/train.py --config $config_path --log $log_path --ckpt_path $ckpt_path --resume $resume --fine_tune ""
