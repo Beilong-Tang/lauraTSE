@@ -3,7 +3,7 @@
 #SBATCH -N 4
 #SBATCH -o log/run_tse_libri2mix_decoder.out
 #SBATCH -e log/run_tse_libri2mix_decoder.err
-#SBATCH -p kshdnormal02
+#SBATCH -p kshdnormal
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=dcu:4
