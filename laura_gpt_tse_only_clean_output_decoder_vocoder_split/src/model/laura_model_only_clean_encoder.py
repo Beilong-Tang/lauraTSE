@@ -405,7 +405,7 @@ class LauraGenModelOnlyCleanEncoder(AbsESPnetModel):
 
 
         # 3. generate dense codec vectors
-        codec_prob = F.one_hot(codec, self.codebook_size) # [B,T,N,1024]
+        codec_prob = F.one_hot(codec, self.codebook_size).float() # [B,T,N,1024]
         codec_emb, codec_emb_lens = self.cal_codec_emb(text, text_lengths, codec_prob[:,:,:self.predict_nq], codec_lengths)
 
         # 4. loss calculation
