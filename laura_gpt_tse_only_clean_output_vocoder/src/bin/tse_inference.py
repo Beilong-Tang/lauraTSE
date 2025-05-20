@@ -12,7 +12,7 @@ print("TSE EXTRACTION CLASS")
 
 
 class TSExtraction:
-    def __init__(self, args: Namespace, model_ckpt: str, device, logger):
+    def __init__(self, args: Namespace, model_ckpt: str, device, vocoder, logger):
         # Load Laura GPT Model #
         model: nn.Module = build_model(args)
         model.to(device)
@@ -29,6 +29,8 @@ class TSExtraction:
         logger.info(
             "model parameter number: {}".format(statistic_model_parameters(model))
         )
+        logger.info(f"vocoder: {vocoder}")
+        self.vocoder = vocoder
 
         # Load Ckpt #
         ckpt = torch.load(model_ckpt, map_location=device)
@@ -83,7 +85,7 @@ class TSExtraction:
         mix_mel_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
         aux_mel_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
 
-        mix, _ = self.model.encode(mix_mel, mix_mel_lens) # [1,T,D]
+        mix, mix_lens = self.model.encode(mix_mel, mix_mel_lens) # [1,T,D]
         aux, aux_lens = self.model.encode(ref_mel, aux_mel_lens) # [1,T,D]
         sep = self.model.lm_embedding(torch.tensor([[self.model.sep]], dtype = torch.int64, device = mix_mel.device)) # [1,1,D]
         text_outs = torch.cat([aux, sep, mix], dim = 1) # [1, T', D]
@@ -103,10 +105,19 @@ class TSExtraction:
         # )
         # print(f"decodec codec: {decod}")
         # 3. predict embeddings
+
+        if self.vocoder == 'ref':
+            text_outs, text_out_lens = aux, aux_lens
+        elif self.vocoder == 'mix':
+            text_outs, text_out_lens = mix, mix_lens
+        else:
+            raise ValueError(f"vocoder unsupported.")
+
+
         gen_speech = self.model.syn_audio(
             decoded_codec,
-            aux,
-            aux_lens,
+            text_outs,
+            text_out_lens,
             self.codec_model,
             continual_length=continual_length,
         )

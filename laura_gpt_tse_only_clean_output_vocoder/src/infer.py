@@ -86,7 +86,7 @@ def inference(rank, args):
     logger.setLevel(logging.INFO)
     # load model
     logger.info("this")
-    tse = TSExtraction(args, args.model_ckpt, device, logger)
+    tse = TSExtraction(args, args.model_ckpt, device, args.model_conf['vocoder'], logger)
     logger.info(tse)
 
     # Inference
