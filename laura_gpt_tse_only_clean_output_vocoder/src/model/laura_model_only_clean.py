@@ -52,7 +52,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             raise ValueError(f"unknown pos-enc option: {pos_enc}")
         assert pos_emb_type in ["split", "uni"], f"pos_emb_type must be split or uni rather than {pos_emb_type}"
 
-        if vocoder == '':
+        if vocoder not in ['ref', 'mix']:
             raise ValueError(f"Vocoder must be specified either mix or ref")
 
         self.ignore_id = ignore_id
