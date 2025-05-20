@@ -38,7 +38,7 @@ save_dir=$(dirname "$config_path")/$(basename "$config_path" .yaml)
 save_dir=${save_dir/#exp\//}
 echo $save_dir
 ckpt_path=ckpt/${save_dir}_16gb
-log_path=log/$save_dir
+log_path=log/${save_dir}_16gb
 mkdir -p $ckpt_path
 mkdir -p $log_path
 
