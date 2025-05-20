@@ -34,11 +34,17 @@ def init_dm_sequence_iter_factory(args, rank, mode) -> SequenceIterFactory:
     return build_sequence_iter_factory(args, iter_option, mode)
 
 from funcodec.tasks.text2audio_generation import text_encoder_choices, codec_encoder_choices
-from model.laura_model_only_clean import LauraGenModelOnlyClean
+from model.laura_model_only_clean_decoder import LauraGenModelOnlyCleanDecoder
+from model.laura_model_only_clean_encoder import LauraGenModelOnlyCleanEncoder
 from funcodec.torch_utils.initialize import initialize
 import os
 
-def build_model(args):
+def build_model(args, model_type):
+    """
+    model_type: must be in ['encoder', 'decoder']
+    """
+    assert model_type in ['encoder', 'decoder']
+
     input_size = args.input_size
 
     # 1. Text Encoder
@@ -70,7 +76,11 @@ def build_model(args):
         else:
             raise TypeError("If token_list is not None, it must be list or str.")
     # model_class = model_choices.get_class(args.model)
-    model = LauraGenModelOnlyClean(
+    if model_type == 'encoder':
+        ModelClass = LauraGenModelOnlyCleanEncoder
+    elif model_type == 'decoder':
+        ModelClass = LauraGenModelOnlyCleanDecoder
+    model = ModelClass(
         input_size=input_size,
         vocab_size=len(token_list),
         token_list=token_list,

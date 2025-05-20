@@ -71,8 +71,9 @@ def main(rank, args):
     l.info(f"rank {rank} of world_size {args.world_size} started...")
     l.info("setup model")
     ## load laura gpt model
-    model: nn.Module = build_model(args)
+    model: nn.Module = build_model(args, args.model_type)
     model.cuda()
+    l.info(f"Training model type {args.model_type}")
     l.info(f"model {model} is intialized")
     l.info(f"model parameters: {sum(p.numel() for p in model.parameters())}")
     l.info(f"Decoder LM parameters: {sum(p.numel() for p in model.codec_lm.parameters())}")
@@ -94,7 +95,7 @@ def main(rank, args):
         model.load_state_dict(_ckpt['model_state_dict'])
         pass
 
-    model = DDP(model, device_ids=[args.gpu])
+    model = DDP(model, device_ids=[args.gpu], find_unused_parameters=True)
     ## optimizer
     optim = init(torch.optim, args.optim, model.parameters())
     ## scheduler

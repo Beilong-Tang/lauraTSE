@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -J run_tse_libri2mix_log_mel_config_aux_5s_only_clean
+#SBATCH -J run_tse_libri2mix_decoder
 #SBATCH -N 4
-#SBATCH -o log/run_tse_libri2mix_log_mel_config_aux_5s_only_clean.out
-#SBATCH -e log/run_tse_libri2mix_log_mel_config_aux_5s_only_clean.err
+#SBATCH -o log/run_tse_libri2mix_decoder.out
+#SBATCH -e log/run_tse_libri2mix_decoder.err
 #SBATCH -p kshdnormal02
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
@@ -28,7 +28,7 @@ module load compiler/dtk/24.04
 ###########
 
 name="libri2mix"
-config_path=exp/$name/config_log_mel_aux_5s.yaml
+config_path=exp/$name/config_log_mel_aux_5s_decoder.yaml
 resume=""
 
 ###############
