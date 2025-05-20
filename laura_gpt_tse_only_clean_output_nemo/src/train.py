@@ -142,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, default=None, help="path to yaml config")
     parser.add_argument("--ckpt_path", type=str, required=True)
     parser.add_argument("--resume", type=str, nargs="?", const="")
-    parser.add_argument("--port", default = 12000, type = int)
+    parser.add_argument("--port", default = 12355, type = int)
     ##############
     # DDP Config #
     ##############
