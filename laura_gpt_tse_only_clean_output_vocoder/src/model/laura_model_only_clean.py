@@ -38,6 +38,7 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             codec_sampling_ratio: float = 0.0,
             predict_nq: int = 1,
             pos_emb_type: str = "split",
+            vocoder: str = '',
     ):
         super().__init__()
         if pos_enc in ["sinusoidal", "abs_pos"]:
@@ -51,6 +52,9 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             raise ValueError(f"unknown pos-enc option: {pos_enc}")
         assert pos_emb_type in ["split", "uni"], f"pos_emb_type must be split or uni rather than {pos_emb_type}"
 
+        if vocoder == '':
+            raise ValueError(f"Vocoder must be specified either mix or ref")
+
         self.ignore_id = ignore_id
         self.codec_sampling_ratio = codec_sampling_ratio
         self.num_quantizers = num_quantizers = codec_conf.get("num_quantizers", 32)
@@ -59,6 +63,8 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
         self.predict_nq = predict_nq
         self.pos_emb_func = pos_enc_class(self.codebook_dim, 0.1)
         self.pos_emb_type = pos_emb_type
+        self.vocoder = vocoder
+        print(f'vocoder type: {self.vocoder}')
 
         # 1. build text inputs related modules
         self.text_encoder = text_encoder
@@ -384,15 +390,15 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             text = self.token_embedding(text * mask) * mask.unsqueeze(-1)
         
         # 1. encode text and ref
-        text, text_lengths = self.encode(text, text_lengths)
+        mix, mix_lengths = self.encode(text, text_lengths)
         aux, aux_lengths = self.encode(aux, aux_lengths) # [B, T, D]
         
         sep_emb = self.lm_embedding(torch.tensor([self.sep], dtype=torch.int64, device=text.device)) # [1, D]
         
         inputs_list = [] # [[T1,D], [T2,D]]
         llm_lengths = []
-        for i in range(0, len(text)):
-            _t = text[i][:text_lengths[i].item()] # [T, D]
+        for i in range(0, len(mix)):
+            _t = mix[i][:mix_lengths[i].item()] # [T, D]
             _a = aux[i][:aux_lengths[i].item()] # [T, D]
             one_input = torch.cat([_a, sep_emb, _t], dim = 0)
             inputs_list.append(one_input)
@@ -423,7 +429,11 @@ class LauraGenModelOnlyClean(AbsESPnetModel):
             codec_lengths
         ) # [B, T, n_q, 1024]
 
-        codec_emb, codec_emb_lens = self.cal_codec_emb(aux, aux_lengths, prob, codec_lengths)
+        if self.vocoder == 'ref':
+            codec_emb, codec_emb_lens = self.cal_codec_emb(aux, aux_lengths, prob, codec_lengths)
+        elif self.vocoder == 'mix':
+            codec_emb, codec_emb_lens = self.cal_codec_emb(mix, mix_lengths, prob, codec_lengths)
+            pass
 
         # 4. loss calculation
         target_emb = self.calc_dense_vector(codec, codec_lengths)

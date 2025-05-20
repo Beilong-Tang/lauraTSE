@@ -111,6 +111,7 @@ model_conf:
         pe_type: uni
         bidirectional_inputs: true
         codec_groups: 1
+    vocoder: ref # Either ref or mix
 
 ### Training related
 batch_type: length
