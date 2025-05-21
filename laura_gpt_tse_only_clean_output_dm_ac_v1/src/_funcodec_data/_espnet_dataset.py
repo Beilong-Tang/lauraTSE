@@ -191,11 +191,11 @@ class DmMixSpkReader:
         clean_audio, _ = librosa.load(clean_path, sr=None)
         intf_audio, _ = librosa.load(intf_path, sr=None)
         ## pad the length 
-        if clean_audio.shape[0] > intf_audio[0]:
+        if clean_audio.shape[0] > intf_audio.shape[0]:
             ## repeat intf_audio 
             new_intf_audio = np.tile(intf_audio, len(clean_audio) // len(intf_audio) + 1)
             intf_audio = new_intf_audio[:len(clean_audio)]
-        elif clean_audio.shape[0] < intf_audio[0]:
+        elif clean_audio.shape[0] < intf_audio.shape[0]:
             offset = random.randint(0, len(intf_audio) - len(clean_audio) - 1)
             intf_audio = intf_audio[offset: offset + len(clean_audio)]
         assert intf_audio.shape == clean_audio.shape
