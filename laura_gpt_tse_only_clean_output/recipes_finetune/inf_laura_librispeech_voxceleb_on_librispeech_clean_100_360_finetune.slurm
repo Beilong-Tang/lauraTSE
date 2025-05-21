@@ -34,10 +34,10 @@ module load compiler/rocm/dtk-23.10
 # Setting #
 ###########
 stage=0
-stop_stage=0 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
+stop_stage=5 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 # 0. libri2mix mixture without norm
-config_name="libri2mix_clean/librispeech_other_500_on_libspeech_clean_100_360/finetune_libri2mix_clean_config_log_mel_aux_5s.yaml"
+config_name="libri2mix_clean/voxceleb_on_librispeech_clean_100_360/finetune_libri2mix_clean_config_log_mel_aux_5s.yaml"
 
 
 mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
