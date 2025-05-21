@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -J inf_laura_librispeech_other_500_on_librispeech_clean_100_360_finetune
+#SBATCH -J inf_laura_librispeech_voxceleb_on_librispeech_clean_100_360_finetune
 #SBATCH -N 4
-#SBATCH -o log/inf_laura_librispeech_other_500_on_librispeech_clean_100_360_finetune.out
-#SBATCH -e log/inf_laura_librispeech_other_500_on_librispeech_clean_100_360_finetune.err
+#SBATCH -o log/inf_laura_librispeech_voxceleb_on_librispeech_clean_100_360_finetune.out
+#SBATCH -e log/inf_laura_librispeech_voxceleb_on_librispeech_clean_100_360_finetune.err
 #SBATCH -p kshdnormal
 #SBATCH --cpus-per-task=8
 #SBATCH --ntasks-per-node=4
@@ -34,7 +34,7 @@ module load compiler/rocm/dtk-23.10
 # Setting #
 ###########
 stage=0
-stop_stage=5 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
+stop_stage=0 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 # 0. libri2mix mixture without norm
 config_name="libri2mix_clean/librispeech_other_500_on_libspeech_clean_100_360/finetune_libri2mix_clean_config_log_mel_aux_5s.yaml"
