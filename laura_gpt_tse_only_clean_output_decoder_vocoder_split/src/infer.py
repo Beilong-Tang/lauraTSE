@@ -30,8 +30,10 @@ def parse_args():
     parser.add_argument("--mix_wav_scp", type=str, default = None)
     parser.add_argument("--ref_wav_scp", type=str, default = None)
 
-    parser.add_argument("--config", type=str)
-    parser.add_argument("--model_ckpt", type=str)
+    parser.add_argument("--decoder_config", type=str)
+    parser.add_argument("--encoder_config", type=str)
+    parser.add_argument("--decoder_ckpt", type=str)
+    parser.add_argument("--encoder_ckpt", type=str)
     parser.add_argument("--output_dir", type=str)
     ## DDP
     parser.add_argument("--num_proc", type=int, default=4)
@@ -62,8 +64,11 @@ def main(args):
 
 def inference(rank, args):
     # update args to contain config
-    update_args(args, args.config)
+    update_args(args, args.decoder_config)
+    args_encoder = argparse.Namespace()
+    update_args(args_encoder, args.encoder_config)
     args = AttrDict(**vars(args))
+    args_encoder = AttrDict(**vars(args_encoder))
     args.output_dir = Path(args.output_dir)
     print(f"args: {args}")
     # device setup
@@ -86,7 +91,7 @@ def inference(rank, args):
     logger.setLevel(logging.INFO)
     # load model
     logger.info("this")
-    tse = TSExtraction(args, args.model_ckpt, device, logger)
+    tse = TSExtraction(args, args_encoder, args.decoder_ckpt, args.encoder_ckpt, device, logger)
     logger.info(tse)
 
     # Inference

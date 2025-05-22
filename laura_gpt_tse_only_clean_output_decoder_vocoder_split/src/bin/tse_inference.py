@@ -12,32 +12,19 @@ print("TSE EXTRACTION CLASS")
 
 
 class TSExtraction:
-    def __init__(self, args: Namespace, model_ckpt: str, device, logger):
+    def __init__(self, args_decoder: Namespace, args_encoder: Namespace,  decoder_model_ckpt: str, encoder_model_ckpt: str, device, logger):
         # Load Laura GPT Model #
-        model: nn.Module = build_model(args)
-        model.to(device)
-        for p in args.init_param:
-            load_pretrained_model(
-                model=model,
-                init_param=p,
-                ignore_init_mismatch=True,
-                # NOTE(kamo): "cuda" for torch.load always indicates cuda:0
-                #   in PyTorch<=1.4
-                map_location=device,
-            )
-        logger.info("model: {}".format(model))
-        logger.info(
-            "model parameter number: {}".format(statistic_model_parameters(model))
-        )
+        assert args_decoder.model_type == "decoder" and args_encoder.model_type == "encoder"
+        decoder_model = self._load_model(args_decoder, decoder_model_ckpt, device, logger)
+        encoder_model = self._load_model(args_encoder, encoder_model_ckpt, device, logger)
 
-        # Load Ckpt #
-        ckpt = torch.load(model_ckpt, map_location=device)
-        model.load_state_dict(ckpt["model_state_dict"])
-        model.eval()
-        self.model = model
+
+        self.decoder = decoder_model
+        self.encoder = encoder_model
         logger.info("model loaded successfully!")
 
         # Load Codec Model
+        args = args_decoder
         codec_kwargs = dict(
             config_file=args["codec_config_file"],
             model_file=args["codec_model_file"],
@@ -62,6 +49,32 @@ class TSExtraction:
         if self.infer_type == 'trunk':
             self.hop_ds = args.hop_ds
             pass
+    
+    def _load_model(self, args, model_ckpt, device, logger):
+        """
+        load model: either encoder or decoder via args.model_type
+        """
+        model: nn.Module = build_model(args, args.model_type)
+        model.to(device)
+        for p in args.init_param:
+            load_pretrained_model(
+                model=model,
+                init_param=p,
+                ignore_init_mismatch=True,
+                # NOTE(kamo): "cuda" for torch.load always indicates cuda:0
+                #   in PyTorch<=1.4
+                map_location=device,
+            )
+        logger.info(f"{args.model_type} model: {model}")
+        logger.info(
+            f"{args.model_type} model parameter number: {statistic_model_parameters(model)}"
+        )
+
+        # Load Ckpt #
+        ckpt = torch.load(model_ckpt, map_location=device)
+        model.load_state_dict(ckpt["model_state_dict"])
+        model.eval()
+        return model
 
     @torch.no_grad()
     def produce(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor, continual:list = None):
@@ -83,14 +96,14 @@ class TSExtraction:
         mix_mel_lens = torch.tensor([mix_mel.size(1)], dtype=torch.long, device=mix_mel.device) # [1]
         aux_mel_lens = torch.tensor([ref_mel.size(1)], dtype=torch.long, device=ref_mel.device) # [1]
 
-        mix, _ = self.model.encode(mix_mel, mix_mel_lens) # [1,T,D]
-        aux, _ = self.model.encode(ref_mel, aux_mel_lens) # [1,T,D]
-        sep = self.model.lm_embedding(torch.tensor([[self.model.sep]], dtype = torch.int64, device = mix_mel.device)) # [1,1,D]
+        mix, _ = self.decoder.encode(mix_mel, mix_mel_lens) # [1,T,D]
+        aux, _ = self.decoder.encode(ref_mel, aux_mel_lens) # [1,T,D]
+        sep = self.decoder.lm_embedding(torch.tensor([[self.decoder.sep]], dtype = torch.int64, device = mix_mel.device)) # [1,1,D]
         text_outs = torch.cat([aux, sep, mix], dim = 1) # [1, T', D]
         text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
 
-        # 2. decode first codec group
-        decoded_codec = self.model.decode_codec(
+        # 2. [Decoder] decode first codec group
+        decoded_codec = self.decoder.decode_codec(
             text_outs,
             text_out_lens,
             max_length=30 * 25,
@@ -102,8 +115,13 @@ class TSExtraction:
         #     decoded_codec[:, continual_length:], bit_width=None, run_mod="decode"
         # )
         # print(f"decodec codec: {decod}")
-        # 3. predict embeddings
-        gen_speech = self.model.syn_audio(
+        # 3. [Encoder] predict embeddings
+        mix, _ = self.encoder.encode(mix_mel, mix_mel_lens) # [1,T,D]
+        aux, _ = self.encoder.encode(ref_mel, aux_mel_lens) # [1,T,D]
+        text_outs = torch.cat([aux, mix], dim = 1) # [1, T', D]
+        text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
+
+        gen_speech = self.encoder.syn_audio(
             decoded_codec,
             text_outs,
             text_out_lens,
