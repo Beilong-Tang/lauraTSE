@@ -30,7 +30,7 @@ module load compiler/rocm/dtk-23.10
 name="voxceleb_on_librispeech_clean_100_360"
 config_path=exp/$name/config_log_mel_aux_5s.yaml
 fine_tune="/public/home/qinxy/bltang/laura_gpt/lauraTSE/laura_gpt_tse_only_clean_output/ckpt/libri2mix/config_log_mel_aux_5s_finetune_librispeech_epoch_100/best.pth"
-resume=""
+resume="ckpt/voxceleb_on_librispeech_clean_100_360/config_log_mel_aux_5s_new/epoch1.pth"
 
 ###############
 # DONT CHANGE #
