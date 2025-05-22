@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J inf_tse_libri2mix_decoder_encoder
-#SBATCH -N 4
+#SBATCH -N 1
 #SBATCH -o log/inf_tse_libri2mix_decoder_encoder.out
 #SBATCH -e log/inf_tse_libri2mix_decoder_encoder.err
 #SBATCH -p kshdnormal
