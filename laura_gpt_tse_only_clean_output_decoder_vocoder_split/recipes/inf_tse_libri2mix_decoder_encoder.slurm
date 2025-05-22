@@ -37,12 +37,6 @@ stage=0
 stop_stage=5 # 0: infer, 1: WER + SPKSIM 2. DNSMOS
 
 
-# 0. libri2mix mixture without norm
-# name="librispeech_clean_100_360_other_500_scratch"
-# dataset="libri2mix_clean" # Specify which dataset to infer
-# config_name="config_log_mel_aux_5s.yaml"
-
-
 mix_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/mix.scp"
 ref_wav_scp="/public/home/qinxy/bltang/data/LibriMix/Libri2Mix/wav16k/min/lists/test/aux_s1.scp"
 
