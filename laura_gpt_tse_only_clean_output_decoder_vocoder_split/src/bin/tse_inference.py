@@ -170,8 +170,8 @@ class TSExtraction:
     
 
     @torch.no_grad()
-    def __call__(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor):
+    def __call__(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor, decoder_only = False):
         if self.infer_type == "offline":
-            return self.produce(mix_audio, ref_audio)
+            return self.produce(mix_audio, ref_audio, decoder_only = decoder_only)
         elif self.infer_type == "trunk":
             return self.produce_trunk(mix_audio, ref_audio)
