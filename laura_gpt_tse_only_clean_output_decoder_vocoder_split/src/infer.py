@@ -128,11 +128,7 @@ def inference(rank, args):
 
             # 1. Inference
             start = time.time()
-            try:
-                output = tse(mix_audio, ref_audio, decoder_only = args.decoder_only)[0]["gen"].squeeze()  # [T]
-            except:
-                logger.info(f"Audio {mix_wav_path} cannot be generated.")
-                continue
+            output = tse(mix_audio, ref_audio, decoder_only = args.decoder_only)[0]["gen"].squeeze()  # [T]
             rtf = (time.time() - start) / (len(output) / sr)
             pbar.set_postfix({"RTF": rtf})
             total_rtf += rtf
