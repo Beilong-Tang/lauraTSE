@@ -65,7 +65,7 @@ decoder_config=exp/libri2mix/config_log_mel_aux_5s_decoder.yaml
 encoder_config=exp/libri2mix/config_log_mel_aux_5s_encoder.yaml
 decoder_ckpt=ckpt/libri2mix/config_log_mel_aux_5s_decoder_16gb/best.pth
 encoder_ckpt=ckpt/libri2mix/config_log_mel_aux_5s_encoder_16gb/best.pth
-output_dir=output/libri2mix/config_log_mel_aux_5s_decoder_encoder
+output_dir=output/libri2mix/config_log_mel_aux_5s_decoder_only
 mkdir -p $output_dir
 output_dir=$(realpath $output_dir) # Add Change it to absolute path, as NISQA changes the directory
 
