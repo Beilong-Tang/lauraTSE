@@ -44,6 +44,7 @@ def parse_args():
 
 def main(args):
     print(args)
+    print(1)
     os.makedirs(args.output_dir, exist_ok=True)
     setup_seed(1234, 0)
     mp.spawn(inference, args=(args,), nprocs=args.num_proc, join=True)
