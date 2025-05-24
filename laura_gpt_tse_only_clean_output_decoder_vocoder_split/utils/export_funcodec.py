@@ -102,7 +102,7 @@ def run(rank, args):
 
     # Output path # ex. out/{rank}
     out_path = Path(args.output)
-    os.makedirs(out_path / 'wav', exist_ok = True)
+    os.makedirs(out_path / 'wavs', exist_ok = True)
     shape_file = open(out_path / f"{rank}_shape.scp", "w")
     scp_file = open(out_path / f"{rank}.scp", "w")
     
@@ -124,7 +124,7 @@ def run(rank, args):
             nq_audio = generate_nq_audio(audio.unsqueeze(0), model, args.nq) # [1,T]
             # saving
             file_name = Path(abs_path).stem + ".wav"
-            save_path = out_path / 'wav' / file_name
+            save_path = out_path / 'wavs' / file_name
             torchaudio.save(save_path, nq_audio.cpu(), sample_rate=_sr)
 
             scp_file.write(f"{n} {save_path}\n")
