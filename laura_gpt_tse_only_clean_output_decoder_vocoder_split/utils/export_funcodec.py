@@ -60,7 +60,7 @@ def generate_nq_audio(audio, model, nq:int, normalize = True):
         est_wav = est_wav * norm / torch.max(torch.abs(est_wav))
         return est_wav
     # print(audio.shape)
-    res1 = model(audio, run_mod = "encode")[0][0].permute(1,2,0)
+    res1 = model(audio, run_mod = "encode")[0][0].permute(1,2,0)  # [1, T, n_q]
     out = model(res1[:,:,:nq], run_mod="decode")
     audio_out = out[2].squeeze(0)
     if normalize:

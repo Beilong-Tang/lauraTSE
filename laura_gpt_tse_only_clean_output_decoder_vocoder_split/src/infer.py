@@ -32,6 +32,7 @@ def parse_args():
 
     parser.add_argument("--decoder_config", type=str)
     parser.add_argument("--encoder_config", type=str)
+    parser.add_argument("--decoder_only", action='store_true', help = 'if inference only using decoder')
     parser.add_argument("--decoder_ckpt", type=str)
     parser.add_argument("--encoder_ckpt", type=str)
     parser.add_argument("--output_dir", type=str)
@@ -56,6 +57,7 @@ def parse_args():
 
 def main(args):
     print(args)
+    print(f"Running decoder only: {args.decoder_only}")
     os.makedirs(args.output_dir, exist_ok=True)
     setup_seed(1234, 0)
     mp.spawn(inference, args=(args,), nprocs=args.num_proc, join=True)
@@ -127,7 +129,7 @@ def inference(rank, args):
             # 1. Inference
             start = time.time()
             try:
-                output = tse(mix_audio, ref_audio)[0]["gen"].squeeze()  # [T]
+                output = tse(mix_audio, ref_audio, decoder_only = args.decoder_only)[0]["gen"].squeeze()  # [T]
             except:
                 logger.info(f"Audio {mix_wav_path} cannot be generated.")
                 continue

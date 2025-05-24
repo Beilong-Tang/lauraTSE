@@ -77,12 +77,13 @@ class TSExtraction:
         return model
 
     @torch.no_grad()
-    def produce(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor, continual:list = None):
+    def produce(self, mix_audio:torch.Tensor, ref_audio:torch.Tensor, continual:list = None, decoder_only = False):
         """
         This function can also be used as TSE Inference.
         mix_audio: the audio of the mixture: [1, T]
         ref_audio: the audio of the reference mel : [1, T]
         continual: List [T,n_q] or None. 
+        decoder_only: use the output from decoder-only LM to directly generate audios
         Returns: enhanced audio : [1,T]
         """
 
@@ -111,32 +112,36 @@ class TSExtraction:
             beam_size=self.beam_size,
             continual=continual,
         ) # [1,T,n_q]
-        # _, _, gen_speech_only_lm, _ = self.codec_model(
-        #     decoded_codec[:, continual_length:], bit_width=None, run_mod="decode"
-        # )
-        # print(f"decodec codec: {decod}")
-        # 3. [Encoder] predict embeddings
-        mix, _ = self.encoder.encode(mix_mel, mix_mel_lens) # [1,T,D]
-        aux, _ = self.encoder.encode(ref_mel, aux_mel_lens) # [1,T,D]
-        text_outs = torch.cat([aux, mix], dim = 1) # [1, T', D]
-        text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
+        if decoder_only:
+            gen_speech = self.codec_model(decoded_codec, run_mod='decode')[2] # [1,1,T]
+            return dict(gen=gen_speech), decoded_codec
+        else:
+            # _, _, gen_speech_only_lm, _ = self.codec_model(
+            #     decoded_codec[:, continual_length:], bit_width=None, run_mod="decode"
+            # )
+            # print(f"decodec codec: {decod}")
+            # 3. [Encoder] predict embeddings
+            mix, _ = self.encoder.encode(mix_mel, mix_mel_lens) # [1,T,D]
+            aux, _ = self.encoder.encode(ref_mel, aux_mel_lens) # [1,T,D]
+            text_outs = torch.cat([aux, mix], dim = 1) # [1, T', D]
+            text_out_lens = torch.tensor([text_outs.size(1)], dtype=torch.long, device=text_outs.device) # [1]
 
-        gen_speech = self.encoder.syn_audio(
-            decoded_codec,
-            text_outs,
-            text_out_lens,
-            self.codec_model,
-            continual_length=continual_length,
-        )
-        ret_val = dict(
-            gen=gen_speech,
-            # gen_only_lm=gen_speech_only_lm,
-        )
+            gen_speech = self.encoder.syn_audio(
+                decoded_codec,
+                text_outs,
+                text_out_lens,
+                self.codec_model,
+                continual_length=continual_length,
+            )
+            ret_val = dict(
+                gen=gen_speech,
+                # gen_only_lm=gen_speech_only_lm,
+            )
 
-        return (
-            ret_val,
-            decoded_codec,
-        )  # {'gen':[1,1,T] }, [1,T,n_q]
+            return (
+                ret_val,
+                decoded_codec,
+            )  # {'gen':[1,1,T] }, [1,T,n_q]
     
     @torch.no_grad()
     def produce_trunk(self, mix_wav, ref_wav):
