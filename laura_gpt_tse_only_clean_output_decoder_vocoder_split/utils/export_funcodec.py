@@ -59,7 +59,7 @@ def generate_nq_audio(audio, model, nq:int, normalize = True):
         norm = torch.norm(raw_wav, p=float('inf'))
         est_wav = est_wav * norm / torch.max(torch.abs(est_wav))
         return est_wav
-    print(audio.shape)
+    # print(audio.shape)
     res1 = model(audio, run_mod = "encode")[0][0].permute(1,2,0)
     out = model(res1[:,:,:nq], run_mod="decode")
     audio_out = out[2].squeeze(0)
@@ -77,7 +77,6 @@ def parse_args():
     p.add_argument('--config', type=str, required= True)
     #
     p.add_argument('--output', type=str, required= True)
-    p.add_argument('--normalize',  action = "store_true")
     ##############
     # DDP config #
     ##############
@@ -89,8 +88,6 @@ def parse_args():
 def main():
     args = parse_args()
     print(args.gpus)
-    if args.normalize:
-        print("Normalizing the output")
     os.makedirs(args.output, exist_ok= True)
     mp.spawn(run, args=(args,), nprocs=args.num_proc, join=True)
     merge_scp(args)
@@ -122,15 +119,13 @@ def run(rank, args):
             # load audio 
             audio, _sr = librosa.load(abs_path, sr = None) # [T]
             assert _sr == 16000
-            if args.normalize:
-                audio = normalize(audio)
             audio = torch.from_numpy(audio)
             audio = audio.cuda()
-            nq_audio = generate_nq_audio(audio, model, args.nq) # [1,T]
+            nq_audio = generate_nq_audio(audio.unsqueeze(0), model, args.nq) # [1,T]
             # saving
             file_name = Path(abs_path).stem + ".wav"
             save_path = out_path / 'wav' / file_name
-            torchaudio.save(save_path, nq_audio.cpu())
+            torchaudio.save(save_path, nq_audio.cpu(), sample_rate=_sr)
 
             scp_file.write(f"{n} {save_path}\n")
 
