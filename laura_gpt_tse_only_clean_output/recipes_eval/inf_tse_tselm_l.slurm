@@ -32,7 +32,7 @@ module load compiler/rocm/dtk-23.10
 # Setting #
 ###########
 stage=1
-stop_stage=5 # 0: infer, 1: WER + SPKSIM 2. DNSMOS 3. NISQA 4. SpeechBert 5. WavLM Base Plus SV
+stop_stage=2 # 0: infer, 1: WER + SPKSIM 2. DNSMOS 3. NISQA 4. SpeechBert 5. WavLM Base Plus SV
 
 # 0. libri2mix mixture without norm
 # name="libri2mix"
@@ -88,24 +88,24 @@ output_dir=/public/home/qinxy/bltang/laura_gpt/lauraTSE/ac_output/tselm_l/output
 
 if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
   ## WER 
-  # echo "[WER $wer_model]"
-  # ## TODO: Change WER TO Large After downloading
-  # python src/eval/wer.py -t "$output_dir"/wavs -r $wer_reference \
-  #   -o "$output_dir"/transcript_"$wer_model".txt -m $wer_model --num_proc $wer_num_proc
+  echo "[WER $wer_model]"
+  ## TODO: Change WER TO Large After downloading
+  python src/eval/wer.py -t "$output_dir"/wavs -r $wer_reference \
+    -o "$output_dir"/transcript_"$wer_model".txt -m $wer_model --num_proc $wer_num_proc
 
   # SPK SIM
-  echo "[SPKSIM WeSpeaker]"
-  python src/eval/wespeaker_eval.py -t "$output_dir/wavs" \
-    -r $libri2mix_clean_dir -o "$output_dir/wespeaker.csv" 
+  # echo "[SPKSIM WeSpeaker]"
+  # python src/eval/wespeaker_eval.py -t "$output_dir/wavs" \
+  #   -r $libri2mix_clean_dir -o "$output_dir/wespeaker.csv" 
 fi 
 
 
-# if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
-#   echo "[Evaluation]"
-#   # DNSMOS
-#   echo "[DNSMOS 16k]"
-#   python src/eval/dnsmos.py --model_dir $dns_model_dir -t "$output_dir/wavs" -o "$output_dir/dnsmos.csv"
-# fi
+if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
+  echo "[Evaluation]"
+  # DNSMOS
+  echo "[DNSMOS 16k]"
+  python src/eval/dnsmos.py --model_dir $dns_model_dir -t "$output_dir/wavs" -o "$output_dir/dnsmos.csv"
+fi
 
 ##################################
 # NISQA, SpeechBert, wavlm_base #
