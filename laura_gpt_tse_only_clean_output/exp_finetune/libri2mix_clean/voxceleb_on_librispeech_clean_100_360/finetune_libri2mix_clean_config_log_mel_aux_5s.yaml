@@ -152,7 +152,7 @@ best_field: loss
 best_save_type: descend
 max_ckpt: 1
 log_interval: 10
-epoch: 50
+epoch: 20
 
 ## patience scheduler
 patience:
