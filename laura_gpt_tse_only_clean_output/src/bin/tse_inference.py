@@ -131,14 +131,17 @@ class TSExtraction:
         # res = [first[0]['gen']]
         while ct <= mix_wav.size(1):
             audio = mix_wav[:, :ct+hop]
-            if audio.size(1) < hop:
-                try:
-                    out = self.produce(audio, ref_wav, continual = continual)
-                except:
-                    print(f"Last frame with length {audio.size(1)} is not generated.")
-                    break
-            else:
+            # if audio.size(1) - audio < hop:
+            #     try:
+            #         out = self.produce(audio, ref_wav, continual = continual)
+            #     except:
+            #         print(f"Last frame with length {audio.size(1)} is not generated.")
+            #         break
+            # else:
+            try:
                 out = self.produce(audio, ref_wav, continual = continual)
+            except:
+                f"Frame {ct} and {ct+hop} of audio len {audio.size(1)} generation error"
             continual = out[1].squeeze(0).tolist()
             res.append(out[0]['gen'])
             ct +=hop
