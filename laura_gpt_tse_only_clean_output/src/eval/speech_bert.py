@@ -3,6 +3,7 @@
 #
 
 import os 
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 import sys
 import os.path as op
 sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
