@@ -137,6 +137,7 @@ fi
 if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
   # SpeechBert
   echo "[SpeechBert]"
+  export HF_ENDPOINT=https://hf-mirror.com
   python src/eval/speech_bert.py --test_dir "$output_dir/wavs" \
   --ref_dir "$libri2mix_clean_dir" --out_dir "$output_dir"
 fi
