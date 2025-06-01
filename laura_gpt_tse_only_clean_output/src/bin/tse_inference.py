@@ -141,7 +141,7 @@ class TSExtraction:
             try:
                 out = self.produce(audio, ref_wav, continual = continual)
             except:
-                f"Frame {ct} and {ct+hop} of audio len {audio.size(1)} generation error"
+                print(f"Frame {ct} and {ct+hop} of audio len {audio.size(1)} generation error")
             continual = out[1].squeeze(0).tolist()
             res.append(out[0]['gen'])
             ct +=hop
